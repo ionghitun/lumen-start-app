@@ -1,0 +1,72 @@
+version: '3'
+services:
+  lumen-php:
+    container_name: lumen-php
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - 9000
+    restart: unless-stopped
+    depends_on:
+      - lumen-mysql
+      - lumen-redis
+    environment:
+      XDEBUG_CONFIG: "remote_host=10.0.75.1"
+    networks:
+      - lumen
+
+  lumen-nginx:
+    container_name: lumen-nginx
+    build:
+      context: ./
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - 80
+    restart: unless-stopped
+    depends_on:
+      - lumen-php
+    environment:
+      VIRTUAL_HOST: "lumen.local.ro"
+    networks:
+      - lumen
+      - nginx-proxy
+
+  lumen-mysql:
+    container_name: lumen-mysql
+    build:
+      context: ./
+      dockerfile: docker/mysql/Dockerfile
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 33065:3306
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - lumen
+
+  lumen-redis:
+    container_name: lumen-redis
+    build:
+      context: ./
+      dockerfile: docker/redis/Dockerfile
+      args:
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - 63795:6379
+    restart: unless-stopped
+    networks:
+      - lumen
+
+networks:
+  lumen:
+  nginx-proxy:
+    external: true

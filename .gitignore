@@ -1,0 +1,10 @@
+#ide
+.idea
+
+#misc
+.env
+vendor
+
+#phpunit
+.phpunit.result.cache
+coverage
