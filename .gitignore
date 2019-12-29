@@ -4,6 +4,7 @@
 #misc
 .env
 vendor
+public/uploads/*
 
 #phpunit
 .phpunit.result.cache

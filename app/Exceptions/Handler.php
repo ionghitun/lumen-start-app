@@ -51,6 +51,8 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
+     * When in production we return same json structure even when error occurred.
+     *
      * @param Request $request
      * @param Exception $exception
      *

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Constants\TranslationCode;
 use App\Services\LogService;
 use Exception;
 use Illuminate\Http\JsonResponse;
