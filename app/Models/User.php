@@ -19,6 +19,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, SoftDeletes;
 
+    /** @var int */
+    const STATUS_UNCONFIRMED = 0;
+    /** @var int */
+    const STATUS_CONFIRMED = 1;
+    /** @var int */
+    const STATUS_EMAIL_UNCONFIRMED = 2;
     public $id;
     public $name;
     public $language_id;
@@ -35,16 +41,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public $created_at;
     public $updated_at;
     public $deleted_at;
-
-    /** @var int */
-    const STATUS_UNCONFIRMED = 0;
-
-    /** @var int */
-    const STATUS_CONFIRMED = 1;
-
-    /** @var int */
-    const STATUS_EMAIL_UNCONFIRMED = 2;
-
     /** @var bool */
     public $timestamps = true;
 

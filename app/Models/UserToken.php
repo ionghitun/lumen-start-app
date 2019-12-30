@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UserToken extends Model
 {
+    /** @var int */
+    const TYPE_REMEMBER_ME = 1;
     public $id;
     public $user_id;
     public $token;
@@ -18,10 +20,6 @@ class UserToken extends Model
     public $expire_on;
     public $created_at;
     public $updated_at;
-
-    /** @var int */
-    const TYPE_REMEMBER_ME = 1;
-
     /** @var bool */
     public $timestamps = true;
 

@@ -17,11 +17,11 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
     $router->get('/', ['uses' => 'ApiController@version']);
 
     /** Users routes */
-    $router->post('/login', ['uses' => 'UserController@login']);
-    $router->post('/login-token', ['uses' => 'UserController@loginWithRememberToken']);
-    $router->post('/login-facebook', ['uses' => 'UserController@loginWithFacebook']);
-    $router->post('/login-twitter', ['uses' => 'UserController@loginWithTwitter']);
-    $router->post('/login-google', ['uses' => 'UserController@loginWithGoogle']);
+    $router->post('/login', ['uses' => 'AuthController@login']);
+    $router->post('/login-token', ['uses' => 'AuthController@loginWithRememberToken']);
+    $router->post('/login-facebook', ['uses' => 'AuthController@loginWithFacebook']);
+    $router->post('/login-twitter', ['uses' => 'AuthController@loginWithTwitter']);
+    $router->post('/login-google', ['uses' => 'AuthController@loginWithGoogle']);
     $router->post('/register', ['uses' => 'UserController@register']);
     $router->post('/forgot-password', ['uses' => 'UserController@forgotPassword']);
     $router->post('/change-password', ['uses' => 'UserController@changePassword']);
@@ -32,7 +32,7 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
 /** Routes with auth */
 $router->group(['middleware' => ['cors', 'auth']], function () use ($router) {
     /** Users routes */
-    $router->post('/logout', ['uses' => 'UserController@logout']);
+    $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->group(['prefix' => 'user'], function () use ($router) {
         $router->get('', ['uses' => 'UserController@getUser']);
         $router->patch('', ['uses' => 'UserController@updateUser']);

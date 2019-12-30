@@ -14,6 +14,10 @@ class UserNotification extends Model
 {
     use SoftDeletes;
 
+    /** @var int */
+    const STATUS_UNREAD = 0;
+    /** @var int */
+    const STATUS_READ = 1;
     public $id;
     public $user_id;
     public $message;
@@ -23,13 +27,6 @@ class UserNotification extends Model
     public $created_at;
     public $updated_at;
     public $deleted_at;
-
-    /** @var int */
-    const STATUS_UNREAD = 0;
-
-    /** @var int */
-    const STATUS_READ = 1;
-
     /** @var bool */
     public $timestamps = true;
 

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Language;
 use App\Models\User;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -81,13 +80,13 @@ class BaseService
     /**
      * Get pagination data.
      *
-     * @param Builder $builder
+     * @param $builder
      * @param $page
      * @param $limit
      *
      * @return array
      */
-    public function getPaginationData(Builder $builder, $page, $limit)
+    public function getPaginationData($builder, $page, $limit)
     {
         $totalEntries = $builder->count();
 

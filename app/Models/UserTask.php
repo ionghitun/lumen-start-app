@@ -14,6 +14,10 @@ class UserTask extends Model
 {
     use SoftDeletes;
 
+    /** @var int */
+    const STATUS_ASSIGNED = 0;
+    /** @var int */
+    const STATUS_COMPLETED = 1;
     public $id;
     public $user_id;
     public $assigned_user_id;
@@ -23,13 +27,6 @@ class UserTask extends Model
     public $created_at;
     public $updated_at;
     public $deleted_at;
-
-    /** @var int */
-    const STATUS_ASSIGNED = 0;
-
-    /** @var int */
-    const STATUS_COMPLETED = 1;
-
     /** @var bool */
     public $timestamps = true;
 
