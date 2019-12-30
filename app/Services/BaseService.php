@@ -60,11 +60,11 @@ class BaseService
      * Apply sort params.
      *
      * @param Request $request
-     * @param Builder $builder
+     * @param $builder
      *
-     * @return Builder
+     * @return mixed
      */
-    public function applySortParams(Request $request, Builder $builder)
+    public function applySortParams(Request $request, $builder)
     {
         if ($request->has('sortColumn') || $request->has('sortOrder')) {
             $sortColumn = strtolower($request->get('sortColumn', 'id'));
@@ -120,7 +120,7 @@ class BaseService
             }
         }
 
-        /** @var User $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         if ($user) {

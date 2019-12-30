@@ -11,6 +11,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UserToken extends Model
 {
+    public $id;
+    public $user_id;
+    public $token;
+    public $type;
+    public $expire_on;
+    public $created_at;
+    public $updated_at;
+
     /** @var int */
     const TYPE_REMEMBER_ME = 1;
 

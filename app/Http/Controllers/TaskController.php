@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserTask;
 use App\Services\LogService;
 use App\Services\TaskService;
 use Exception;
@@ -60,11 +61,9 @@ class TaskController extends Controller
     /**
      * Create a task
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
-    public function createTask(Request $request)
+    public function createTask()
     {
         try {
 
@@ -86,8 +85,9 @@ class TaskController extends Controller
     public function getTask($id)
     {
         try {
+            $userTask = UserTask::find($id);
 
-            return $this->successResponse();
+            return $this->successResponse($userTask);
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 
@@ -99,15 +99,17 @@ class TaskController extends Controller
      * Update a task
      *
      * @param $id
-     * @param Request $request
      *
      * @return JsonResponse
      */
-    public function updateTask($id, Request $request)
+    public function updateTask($id)
     {
         try {
+            $userTask = UserTask::find($id);
 
-            return $this->successResponse();
+            //TODO
+
+            return $this->successResponse($userTask);
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 
@@ -125,6 +127,13 @@ class TaskController extends Controller
     public function deleteTask($id)
     {
         try {
+            $userTask = UserTask::find($id);
+
+            //TODO
+
+            if ($userTask) {
+                $userTask->delete();
+            }
 
             return $this->successResponse();
         } catch (Exception $e) {

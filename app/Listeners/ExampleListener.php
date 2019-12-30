@@ -2,8 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\ExampleEvent;
-
 /**
  * Class ExampleListener
  *
@@ -20,10 +18,8 @@ class ExampleListener
 
     /**
      * Handle the event.
-     *
-     * @param ExampleEvent $event
      */
-    public function handle(ExampleEvent $event)
+    public function handle()
     {
     }
 }

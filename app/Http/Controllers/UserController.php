@@ -341,7 +341,7 @@ class UserController extends Controller
                 return $this->userErrorResponse($validator->messages());
             }
 
-            /** @var User $user */
+            /** @var User|null $user */
             $user = User::whereEncrypted('email', $request->get('email'))
                 ->where('forgot_code', $request->get('code'))
                 ->first();
@@ -471,11 +471,9 @@ class UserController extends Controller
     /**
      * Get logged user
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
-    public function getUser(Request $request)
+    public function getUser()
     {
         try {
             $user = Auth::user();
@@ -511,7 +509,7 @@ class UserController extends Controller
             $email = $request->get('email');
 
             if ($user->email !== $email) {
-                /** @var User $userExists */
+                /** @var User|null $userExists */
                 $userExists = User::whereEncrypted('email', $email)->first();
 
                 if ($userExists) {

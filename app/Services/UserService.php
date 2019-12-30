@@ -17,7 +17,6 @@ use Illuminate\Support\Str;
 use IonGhitun\JwtToken\Exceptions\JwtException;
 use IonGhitun\JwtToken\Jwt;
 use Laravel\Socialite\Two\User as SocialiteUser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UserService
@@ -81,7 +80,7 @@ class UserService
      */
     public function loginUser(array $credentials)
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = User::whereEncrypted('email', $credentials['email'])
             ->first();
 
@@ -414,9 +413,9 @@ class UserService
     /**
      * Change logged user picture
      *
-     * @param UploadedFile $picture
+     * @param $picture
      */
-    public function updateLoggedUserPicture(UploadedFile $picture)
+    public function updateLoggedUserPicture($picture)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -589,7 +588,7 @@ class UserService
      */
     public function activateUserAccount($email, $code)
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = User::whereEncrypted('email', $email)
             ->where('activation_code', $code)
             ->first();

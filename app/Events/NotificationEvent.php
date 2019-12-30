@@ -41,11 +41,11 @@ class NotificationEvent extends Event implements ShouldBroadcast
     /**
      * Get the channels the notification should broadcast on.
      *
-     * @return array|Channel|Channel[]
+     * @return Channel|Channel[]
      */
     public function broadcastOn()
     {
-        return ['user.' . $this->userId];
+        return new Channel('user.' . $this->userId);
     }
 
     /**

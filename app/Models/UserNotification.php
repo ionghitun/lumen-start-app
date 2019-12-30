@@ -14,6 +14,16 @@ class UserNotification extends Model
 {
     use SoftDeletes;
 
+    public $id;
+    public $user_id;
+    public $message;
+    public $ref_name;
+    public $ref_id;
+    public $status;
+    public $created_at;
+    public $updated_at;
+    public $deleted_at;
+
     /** @var int */
     const STATUS_UNREAD = 0;
 

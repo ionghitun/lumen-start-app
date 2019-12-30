@@ -19,6 +19,23 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, SoftDeletes;
 
+    public $id;
+    public $name;
+    public $language_id;
+    public $email;
+    public $password;
+    public $picture;
+    public $status;
+    public $activation_code;
+    public $forgot_code;
+    public $forgot_time;
+    public $facebook_id;
+    public $twitter_id;
+    public $google_id;
+    public $created_at;
+    public $updated_at;
+    public $deleted_at;
+
     /** @var int */
     const STATUS_UNCONFIRMED = 0;
 

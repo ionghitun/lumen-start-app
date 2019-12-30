@@ -15,4 +15,9 @@ use Illuminate\Queue\SerializesModels;
 abstract class Job implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
+
+    public $id;
+    public $relations;
+    public $class;
+    public $keyBy;
 }
