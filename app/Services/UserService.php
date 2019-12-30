@@ -9,12 +9,15 @@ use App\Models\UserToken;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator as ReturnedValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use IonGhitun\JwtToken\Exceptions\JwtException;
 use IonGhitun\JwtToken\Jwt;
 use Laravel\Socialite\Two\User as SocialiteUser;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class UserService
@@ -44,6 +47,26 @@ class UserService
             'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
             'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED,
             'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED
+        ];
+
+        return Validator::make($request->all(), $rules, $messages);
+    }
+
+    /**
+     * Validate request on login with remember token
+     *
+     * @param Request $request
+     *
+     * @return ReturnedValidator
+     */
+    public function validateTokenLoginRequest(Request $request)
+    {
+        $rules = [
+            'rememberToken' => 'required'
+        ];
+
+        $messages = [
+            'rememberToken.required' => TranslationCode::ERROR_REMEMBER_TOKEN_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -224,6 +247,8 @@ class UserService
     }
 
     /**
+     * Login user with social
+     *
      * @param SocialiteUser $socialUser
      * @param Language $language
      * @param string $socialId
@@ -232,41 +257,32 @@ class UserService
      */
     public function loginUserWithSocial(SocialiteUser $socialUser, Language $language, string $socialId)
     {
-        if ($socialUser->getEmail()) {
-            $user = User::where(function ($query) use ($socialUser, $socialId) {
-                $query->where($socialId, $socialUser->getId())
-                    ->orWhereEncrypted('email', $socialUser->getEmail());
-            })->first();
-        } else {
-            $user = User::where($socialId, $socialUser->getId());
-        }
+        $user = User::where(function ($query) use ($socialUser, $socialId) {
+            $query->where($socialId, $socialUser->getId())
+                ->orWhereEncrypted('email', $socialUser->getEmail());
+        })->first();
+
 
         if (!$user) {
             $user = new User();
 
             $user->language_id = $language->id;
-        }
-
-        if (!$user->name) {
             $user->name = $socialUser->getName();
-        }
-
-        if (!$user->email) {
             $user->email = $socialUser->getEmail();
-        }
 
-        if (!$user->picture && $socialUser->getAvatar()) {
-            $baseService = new BaseService();
+            if ($socialUser->getAvatar()) {
+                $baseService = new BaseService();
 
-            $path = 'uploads/users/';
-            File::makeDirectory($path, 0777, true, true);
+                $path = 'uploads/users/';
+                File::makeDirectory($path, 0777, true, true);
 
-            $generatedPictureName = time() . '.jpg';
+                $generatedPictureName = time() . '.jpg';
 
-            $pictureData = $baseService->processImage($path, $socialUser->getAvatar(), $generatedPictureName, true, true);
+                $pictureData = $baseService->processImage($path, $socialUser->getAvatar(), $generatedPictureName, true, true);
 
-            if ($pictureData) {
-                $user->picture = $pictureData;
+                if ($pictureData) {
+                    $user->picture = $pictureData;
+                }
             }
         }
 
@@ -337,6 +353,44 @@ class UserService
     }
 
     /**
+     * Update logged user
+     *
+     * @param User $user
+     * @param Request $request
+     */
+    public function updateLoggedUser(User &$user, Request $request)
+    {
+        $email = $request->get('email');
+        $confirmEmail = false;
+
+        if ($user->email !== $email) {
+            $user->email = $email;
+            $user->status = User::STATUS_EMAIL_UNCONFIRMED;
+            $user->activation_code = strtoupper(Str::random(6));
+
+            $confirmEmail = true;
+        }
+
+        if ($request->has('newPassword')) {
+            $user->password = Hash::make($request->get('newPassword'));
+        }
+
+        $user->name = $request->get('name');
+
+        /** @var Language $language */
+        $language = Language::where('id', $request->get('language'))->first();
+        $user->language_id = $language->id;
+
+        if ($confirmEmail) {
+            $emailService = new EmailService();
+
+            $emailService->sendEmailConfirmationCode($user, $language->code);
+        }
+
+        $user->save();
+    }
+
+    /**
      * Validate request on update user picture
      *
      * @param Request $request
@@ -355,6 +409,43 @@ class UserService
         ];
 
         return Validator::make($request->all(), $rules, $messages);
+    }
+
+    /**
+     * Change logged user picture
+     *
+     * @param UploadedFile $picture
+     */
+    public function updateLoggedUserPicture(UploadedFile $picture)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $pictureExtension = $picture->getClientOriginalExtension();
+        $generatedPictureName = str_replace(' ', '_', $user->name) . '_' . time() . '.' . $pictureExtension;
+
+        $path = 'uploads/users/';
+        File::makeDirectory($path, 0777, true, true);
+
+        $baseService = new BaseService();
+
+        $pictureData = $baseService->processImage($path, $picture, $generatedPictureName, true);
+
+        if ($pictureData) {
+            if ($user->picture !== '') {
+                $oldPictureData = json_decode($user->picture, true);
+
+                foreach ($oldPictureData as $oldPicture) {
+                    if ($oldPicture && file_exists($oldPicture)) {
+                        unlink($oldPicture);
+                    }
+                }
+            }
+
+            $user->picture = $pictureData;
+        }
+
+        $user->save();
     }
 
     /**
@@ -387,8 +478,8 @@ class UserService
      */
     public function sendForgotPasswordCode(User $user, Language $language)
     {
-        $user->forgotCode = strtoupper(Str::random(6));
-        $user->forgotTime = Carbon::now()->format('Y-m-d H:i:s');
+        $user->forgot_code = strtoupper(Str::random(6));
+        $user->forgot_time = Carbon::now()->format('Y-m-d H:i:s');
 
         /** @var EmailService $emailService */
         $emailService = new EmailService();
@@ -426,6 +517,21 @@ class UserService
     }
 
     /**
+     * Update user password after reset
+     *
+     * @param $user
+     * @param $password
+     */
+    public function updatePassword($user, $password)
+    {
+        $user->forgot_code = null;
+        $user->forgot_time = null;
+        $user->password = Hash::make($password);
+
+        $user->save();
+    }
+
+    /**
      * Register user
      *
      * @param Request $request
@@ -440,7 +546,7 @@ class UserService
         $user->password = $request->get('password');
         $user->status = User::STATUS_UNCONFIRMED;
         $user->language_id = $language->id;
-        $user->activationCode = strtoupper(Str::random(6));
+        $user->activation_code = strtoupper(Str::random(6));
 
         /** @var EmailService $emailService */
         $emailService = new EmailService();
@@ -457,7 +563,7 @@ class UserService
      *
      * @return ReturnedValidator
      */
-    public function validateActivateAccountRequest(Request $request)
+    public function validateActivateAccountOrChangeEmailRequest(Request $request)
     {
         $rules = [
             'email' => 'required|email',
@@ -471,6 +577,33 @@ class UserService
         ];
 
         return Validator::make($request->all(), $rules, $messages);
+    }
+
+    /**
+     * Activate user account on register or on change email
+     *
+     * @param $email
+     * @param $code
+     *
+     * @return bool
+     */
+    public function activateUserAccount($email, $code)
+    {
+        /** @var User $user */
+        $user = User::whereEncrypted('email', $email)
+            ->where('activation_code', $code)
+            ->first();
+
+        if (!$user) {
+            return false;
+        }
+
+        $user->status = User::STATUS_CONFIRMED;
+        $user->activation_code = null;
+
+        $user->save();
+
+        return true;
     }
 
     /**
@@ -489,29 +622,6 @@ class UserService
         $messages = [
             'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_EMAIL_INVALID
-        ];
-
-        return Validator::make($request->all(), $rules, $messages);
-    }
-
-    /**
-     * Validate confirm email
-     *
-     * @param Request $request
-     *
-     * @return ReturnedValidator
-     */
-    public function validateConfirmEmailRequest(Request $request)
-    {
-        $rules = [
-            'email' => 'required|email',
-            'code' => 'required'
-        ];
-
-        $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'code.required' => TranslationCode::ERROR_CODE_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -537,7 +647,7 @@ class UserService
             return ['account' => TranslationCode::ERROR_ACCOUNT_UNACTIVATED];
         }
 
-        if ($user->updatedAt->addMinute() > Carbon::now()) {
+        if ($user->updated_at->addMinute() > Carbon::now()) {
             return ['code' => TranslationCode::ERROR_CODE_SEND_COOLDOWN];
         }
 
@@ -546,7 +656,7 @@ class UserService
 
         $emailService->sendActivationCode($user, $language->code);
 
-        $user->updatedAt = Carbon::now()->format('Y-m-d H:i:s');
+        $user->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $user->save();
 
         return false;

@@ -18,6 +18,7 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
 
     /** Users routes */
     $router->post('/login', ['uses' => 'UserController@login']);
+    $router->post('/login-token', ['uses' => 'UserController@loginWithRememberToken']);
     $router->post('/login-facebook', ['uses' => 'UserController@loginWithFacebook']);
     $router->post('/login-twitter', ['uses' => 'UserController@loginWithTwitter']);
     $router->post('/login-google', ['uses' => 'UserController@loginWithGoogle']);
@@ -26,7 +27,6 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
     $router->post('/change-password', ['uses' => 'UserController@changePassword']);
     $router->post('/activate-account', ['uses' => 'UserController@activateAccount']);
     $router->post('/resend-activation-code', ['uses' => 'UserController@resendActivationCode']);
-    $router->post('/confirm-email', ['uses' => 'UserController@confirmEmail']);
 });
 
 /** Routes with auth */

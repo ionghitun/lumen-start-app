@@ -37,7 +37,7 @@ class Authenticate
      *
      * @param $request
      * @param Closure $next
-     * @param null $guard
+     * @param $guard
      *
      * @return JsonResponse|mixed
      */

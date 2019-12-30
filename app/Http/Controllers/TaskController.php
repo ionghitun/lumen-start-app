@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Log;
 /**
  * Class TaskController
  *
- * TODO
- *
  * @package App\Http\Controllers
  */
 class TaskController extends Controller

@@ -53,9 +53,9 @@ class Controller extends BaseController
     /**
      * Success response
      *
-     * @param null $data
-     * @param null $pagination
-     * @param null $refreshToken
+     * @param $data
+     * @param $pagination
+     * @param $refreshToken
      * @return JsonResponse
      *
      * @throws JwtException
@@ -105,13 +105,13 @@ class Controller extends BaseController
     /**
      * Return user fault response.
      *
-     * @param array $errorMessage
-     * @param null $refreshToken
+     * @param $errorMessage
+     * @param $refreshToken
      * @return JsonResponse
      *
      * @throws JwtException
      */
-    protected function userErrorResponse(array $errorMessage, $refreshToken = null)
+    protected function userErrorResponse($errorMessage, $refreshToken = null)
     {
         $this->isError = true;
         $this->errorMessage = $errorMessage;

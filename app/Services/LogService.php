@@ -24,7 +24,7 @@ class LogService
     {
         $errorString = "#00 User: ";
 
-        /** @var User $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         if ($user) {
@@ -38,40 +38,11 @@ class LogService
             $args = "";
 
             if (isset($frame['args'])) {
-                $args = array();
-
-                foreach ($frame['args'] as $arg) {
-                    if (is_string($arg)) {
-                        $args[] = "'" . $arg . "'";
-                    } elseif (is_array($arg)) {
-                        $args[] = "Array";
-                    } elseif (is_null($arg)) {
-                        $args[] = 'NULL';
-                    } elseif (is_bool($arg)) {
-                        $args[] = ($arg) ? "true" : "false";
-                    } elseif (is_object($arg)) {
-                        $args[] = get_class($arg);
-                    } elseif (is_resource($arg)) {
-                        $args[] = get_resource_type($arg);
-                    } else {
-                        $args[] = $arg;
-                    }
-                }
-
-                $args = join(", ", $args);
+                $args = self::getFrameArgs($frame['args']);
             }
 
-            $currentFile = "[internal function]";
-
-            if (isset($frame['file'])) {
-                $currentFile = $frame['file'];
-            }
-
-            $currentLine = "";
-
-            if (isset($frame['line'])) {
-                $currentLine = $frame['line'];
-            }
+            $currentFile = isset($frame['file']) ? $frame['file'] : '[internal function]';
+            $currentLine = isset($frame['line']) ? $frame['line'] : '';
 
             $errorString .= sprintf("#%s %s(%s): %s(%s)\n",
                 $count,
@@ -83,5 +54,37 @@ class LogService
         }
 
         return $errorString . "\n";
+    }
+
+    /**
+     * Get exception args
+     *
+     * @param $frameArgs
+     *
+     * @return string
+     */
+    private static function getFrameArgs($frameArgs)
+    {
+        $args = array();
+
+        foreach ($frameArgs as $arg) {
+            if (is_string($arg)) {
+                $args[] = "'" . $arg . "'";
+            } elseif (is_array($arg)) {
+                $args[] = "Array";
+            } elseif (is_null($arg)) {
+                $args[] = 'NULL';
+            } elseif (is_bool($arg)) {
+                $args[] = ($arg) ? "true" : "false";
+            } elseif (is_object($arg)) {
+                $args[] = get_class($arg);
+            } elseif (is_resource($arg)) {
+                $args[] = get_resource_type($arg);
+            } else {
+                $args[] = $arg;
+            }
+        }
+
+        return join(", ", $args);
     }
 }

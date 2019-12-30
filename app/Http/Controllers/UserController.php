@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Constants\TranslationCode;
-use App\Models\Language;
 use App\Models\User;
 use App\Models\UserToken;
-use App\Services\EmailService;
 use App\Services\LogService;
 use App\Services\UserService;
 use Carbon\Carbon;
@@ -15,17 +13,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 /**
  * Class UserController
- *
- * TODO
  *
  * @package App\Http\Controllers
  */
@@ -53,10 +47,6 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        if ($request->has('rememberToken')) {
-            return $this->loginWithRememberToken($request);
-        }
-
         try {
             $validator = $this->userService->validateLoginRequest($request);
 
@@ -91,24 +81,34 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    private function loginWithRememberToken(Request $request)
+    public function loginWithRememberToken(Request $request)
     {
         try {
+            $validator = $this->userService->validateTokenLoginRequest($request);
+
+            if (!$validator->passes()) {
+                return $this->userErrorResponse($validator->messages());
+            }
+
             $rememberToken = $request->get('rememberToken');
 
             $user = $this->userService->loginUserWithRememberToken($rememberToken);
 
             if (!$user) {
-                return $this->userErrorResponse(['rememberToken' => TranslationCode::ERROR_REMEMBER_TOKEN_REQUIRED]);
+                return $this->userErrorResponse(['rememberToken' => TranslationCode::ERROR_REMEMBER_TOKEN_INVALID]);
             }
 
             if ($user->status === User::STATUS_UNCONFIRMED) {
                 return $this->userErrorResponse(['account' => TranslationCode::ERROR_ACCOUNT_UNACTIVATED]);
             }
 
+            DB::beginTransaction();
+
             $this->userService->updateRememberTokenValability($rememberToken);
 
             $loginData = $this->userService->generateLoginData($user);
+
+            DB::commit();
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
@@ -143,9 +143,17 @@ class UserController extends Controller
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
             }
 
+            if (!$facebookUser->getEmail()) {
+                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
+            }
+
+            DB::beginTransaction();
+
             $user = $this->userService->loginUserWithSocial($facebookUser, $this->baseService->getLanguage($request), 'facebook_id');
 
             $loginData = $this->userService->generateLoginData($user);
+
+            DB::commit();
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
@@ -180,9 +188,17 @@ class UserController extends Controller
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
             }
 
+            if (!$twitterUser->getEmail()) {
+                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
+            }
+
+            DB::beginTransaction();
+
             $user = $this->userService->loginUserWithSocial($twitterUser, $this->baseService->getLanguage($request), 'twitter_id');
 
             $loginData = $this->userService->generateLoginData($user);
+
+            DB::commit();
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
@@ -217,9 +233,17 @@ class UserController extends Controller
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
             }
 
+            if (!$googleUser->getEmail()) {
+                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
+            }
+
+            DB::beginTransaction();
+
             $user = $this->userService->loginUserWithSocial($googleUser, $this->baseService->getLanguage($request), 'google_id');
 
             $loginData = $this->userService->generateLoginData($user);
+
+            DB::commit();
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
@@ -247,7 +271,11 @@ class UserController extends Controller
 
             $request->merge(['password' => Hash::make($request->get('password'))]);
 
+            DB::beginTransaction();
+
             $this->userService->registerUser($request, $this->baseService->getLanguage($request));
+
+            DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {
@@ -273,14 +301,13 @@ class UserController extends Controller
                 return $this->userErrorResponse($validator->messages());
             }
 
-            /** @var User $user */
             $user = User::whereEncrypted('email', $request->get('email'))->first();
 
             if ($user->status === User::STATUS_UNCONFIRMED) {
                 return $this->userErrorResponse(['account' => TranslationCode::ERROR_ACCOUNT_UNACTIVATED]);
             }
 
-            if ($user->updatedAt->addMinute() > Carbon::now()) {
+            if ($user->updated_at->addMinute() > Carbon::now()) {
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_CODE_SEND_COOLDOWN]);
             }
 
@@ -323,15 +350,15 @@ class UserController extends Controller
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_CODE_INVALID]);
             }
 
-            if (Carbon::parse($user->forgotTime)->addHour() < Carbon::now()) {
+            if (Carbon::parse($user->forgot_time)->addHour() < Carbon::now()) {
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_PASSED_1H]);
             }
 
-            $user->forgotCode = null;
-            $user->forgotTime = null;
-            $user->password = Hash::make($request->get('password'));
+            DB::beginTransaction();
 
-            $user->save();
+            $this->userService->updatePassword($user, $request->get('password'));
+
+            DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {
@@ -351,25 +378,21 @@ class UserController extends Controller
     public function activateAccount(Request $request)
     {
         try {
-            $validator = $this->userService->validateActivateAccountRequest($request);
+            $validator = $this->userService->validateActivateAccountOrChangeEmailRequest($request);
 
             if (!$validator->passes()) {
                 return $this->userErrorResponse($validator->messages());
             }
 
-            /** @var User $user */
-            $user = User::whereEncrypted('email', $request->get('email'))
-                ->where('activation_code', $request->get('code'))
-                ->first();
+            DB::beginTransaction();
 
-            if (!$user) {
+            $activated = $this->userService->activateUserAccount($request->get('email'), $request->get('code'));
+
+            if (!$activated) {
                 return $this->userErrorResponse(['code' => TranslationCode::ERROR_CODE_INVALID]);
             }
 
-            $user->status = User::STATUS_CONFIRMED;
-            $user->activationCode = null;
-
-            $user->save();
+            DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {
@@ -395,51 +418,17 @@ class UserController extends Controller
                 return $this->userErrorResponse($validator->messages());
             }
 
+            DB::beginTransaction();
+
             $error = $this->userService->resendRegisterMail($request, $this->baseService->getLanguage($request));
+
+            DB::commit();
 
             if (!$error) {
                 return $this->successResponse();
             } else {
                 return $this->userErrorResponse($error);
             }
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
-
-            return $this->errorResponse();
-        }
-    }
-
-    /**
-     * Confirm email address after changing
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function confirmEmail(Request $request)
-    {
-        try {
-            $validator = $this->userService->validateConfirmEmailRequest($request);
-
-            if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
-            }
-
-            /** @var User $user */
-            $user = User::whereEncrypted('email', $request->get('email'))
-                ->where('activation_code', $request->get('code'))
-                ->first();
-
-            if (!$user) {
-                return $this->userErrorResponse(['code' => TranslationCode::ERROR_CODE_INVALID]);
-            }
-
-            $user->status = User::STATUS_CONFIRMED;
-            $user->activationCode = null;
-
-            $user->save();
-
-            return $this->successResponse();
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 
@@ -461,10 +450,14 @@ class UserController extends Controller
             $user = Auth::user();
 
             if ($request->has('rememberToken')) {
+                DB::beginTransaction();
+
                 UserToken::where('token', $request->get('rememberToken'))
                     ->where('user_id', $user->id)
                     ->where('type', UserToken::TYPE_REMEMBER_ME)
                     ->delete();
+
+                DB::commit();
             }
 
             return $this->successResponse();
@@ -516,44 +509,25 @@ class UserController extends Controller
             }
 
             $email = $request->get('email');
-            $confirmEmail = false;
 
             if ($user->email !== $email) {
                 /** @var User $userExists */
-                $userExists = User::whereEncrypted('email', $request->get('email'))->first();
+                $userExists = User::whereEncrypted('email', $email)->first();
 
                 if ($userExists) {
                     return $this->userErrorResponse(['email' => TranslationCode::ERROR_EMAIL_REGISTERED]);
-                } else {
-                    $user->email = $email;
-                    $user->status = User::STATUS_EMAIL_UNCONFIRMED;
-                    $user->activationCode = strtoupper(Str::random(6));
-
-                    $confirmEmail = true;
                 }
             }
 
-            if ($request->has('newPassword')) {
-                if (!app('hash')->check($request->get('oldPassword'), $user->password)) {
-                    return $this->userErrorResponse(['oldPassword' => TranslationCode::ERROR_OLD_PASSWORD_WRONG]);
-                } else {
-                    $user->password = Hash::make($request->get('newPassword'));
-                }
+            if ($request->has('newPassword') && !app('hash')->check($request->get('oldPassword'), $user->password)) {
+                return $this->userErrorResponse(['oldPassword' => TranslationCode::ERROR_OLD_PASSWORD_WRONG]);
             }
 
-            $user->name = $request->get('name');
+            DB::beginTransaction();
 
-            /** @var Language $language */
-            $language = Language::where('id', $request->get('language'))->first();
-            $user->language_id = $language->id;
+            $this->userService->updateLoggedUser($user, $request);
 
-            if ($confirmEmail) {
-                $emailService = new EmailService();
-
-                $emailService->sendEmailConfirmationCode($user, $language->code);
-            }
-
-            $user->save();
+            DB::commit();
 
             return $this->successResponse($user);
         } catch (Exception $e) {
@@ -573,40 +547,17 @@ class UserController extends Controller
     public function changeUserPicture(Request $request)
     {
         try {
-            /** @var User $user */
-            $user = Auth::user();
-
             $validator = $this->userService->validateUpdateUserPictureRequest($request);
 
             if (!$validator->passes()) {
                 return $this->userErrorResponse($validator->messages());
             }
 
-            $picture = $request->file('picture');
+            DB::beginTransaction();
 
-            $pictureExtension = $picture->getClientOriginalExtension();
-            $generatedPictureName = str_replace(' ', '_', $user->name) . '_' . time() . '.' . $pictureExtension;
+            $this->userService->updateLoggedUserPicture($request->file('picture'));
 
-            $path = 'uploads/users/';
-            File::makeDirectory($path, 0777, true, true);
-
-            $pictureData = $this->baseService->processImage($path, $picture, $generatedPictureName, true);
-
-            if ($pictureData) {
-                if (!is_null($user->picture) && $user->picture !== '') {
-                    $oldPictureData = json_decode($user->picture, true);
-
-                    foreach ($oldPictureData as $oldPicture) {
-                        if ($oldPicture && file_exists($oldPicture)) {
-                            unlink($oldPicture);
-                        }
-                    }
-                }
-
-                $user->picture = $pictureData;
-            }
-
-            $user->save();
+            DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {
