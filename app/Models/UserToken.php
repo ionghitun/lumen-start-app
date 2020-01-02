@@ -13,13 +13,7 @@ class UserToken extends Model
 {
     /** @var int */
     const TYPE_REMEMBER_ME = 1;
-    public $id;
-    public $user_id;
-    public $token;
-    public $type;
-    public $expire_on;
-    public $created_at;
-    public $updated_at;
+
     /** @var bool */
     public $timestamps = true;
 

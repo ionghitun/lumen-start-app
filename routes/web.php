@@ -20,7 +20,6 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/login-token', ['uses' => 'AuthController@loginWithRememberToken']);
     $router->post('/login-facebook', ['uses' => 'AuthController@loginWithFacebook']);
-    $router->post('/login-twitter', ['uses' => 'AuthController@loginWithTwitter']);
     $router->post('/login-google', ['uses' => 'AuthController@loginWithGoogle']);
     $router->post('/register', ['uses' => 'UserController@register']);
     $router->post('/forgot-password', ['uses' => 'UserController@forgotPassword']);

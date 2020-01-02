@@ -23,7 +23,7 @@
         "illuminate/redis": "^6.8",
         "intervention/image": "^2.5",
         "ionghitun/jwt-token": "^1.1",
-        "ionghitun/laravel-lumen-mysql-encryption": "^1.1",
+        "ionghitun/laravel-lumen-mysql-encryption": "^1.2",
         "laravel/lumen-framework": "^6.2",
         "laravel/socialite": "^4.3",
         "predis/predis": "^1.1"

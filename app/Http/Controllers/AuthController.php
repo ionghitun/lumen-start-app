@@ -135,8 +135,12 @@ class AuthController extends Controller
 
             $token = $request->get('accessToken');
 
-            /** @var SocialiteUser $facebookUser */
-            $facebookUser = Socialite::driver('facebook')->userFromToken($token);
+            try {
+                /** @var SocialiteUser $facebookUser */
+                $facebookUser = Socialite::driver('facebook')->userFromToken($token);
+            } catch (Exception $e) {
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_ACCESS_TOKEN_INVALID]);
+            }
 
             if ($facebookUser->getId() !== $request->get('facebookId')) {
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
@@ -149,51 +153,6 @@ class AuthController extends Controller
             DB::beginTransaction();
 
             $user = $this->userService->loginUserWithSocial($facebookUser, $this->baseService->getLanguage($request), 'facebook_id');
-
-            $loginData = $this->userService->generateLoginData($user);
-
-            DB::commit();
-
-            return $this->successResponse($loginData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
-
-            return $this->errorResponse();
-        }
-    }
-
-    /**
-     * Login with twitter
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function loginWithTwitter(Request $request)
-    {
-        try {
-            $validator = $this->userService->validateTwitterLoginRequest($request);
-
-            if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
-            }
-
-            $token = $request->get('accessToken');
-
-            /** @var SocialiteUser $twitterUser */
-            $twitterUser = Socialite::driver('twitter')->userFromToken($token);
-
-            if ($twitterUser->getId() !== $request->get('twitter_id')) {
-                return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
-            }
-
-            if (!$twitterUser->getEmail()) {
-                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
-            }
-
-            DB::beginTransaction();
-
-            $user = $this->userService->loginUserWithSocial($twitterUser, $this->baseService->getLanguage($request), 'twitter_id');
 
             $loginData = $this->userService->generateLoginData($user);
 
@@ -225,8 +184,12 @@ class AuthController extends Controller
 
             $token = $request->get('accessToken');
 
-            /** @var SocialiteUser $googleUser */
-            $googleUser = Socialite::driver('twitter')->userFromToken($token);
+            try {
+                /** @var SocialiteUser $googleUser */
+                $googleUser = Socialite::driver('google')->userFromToken($token);
+            } catch (Exception $e) {
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_ACCESS_TOKEN_INVALID]);
+            }
 
             if ($googleUser->getId() !== $request->get('google_id')) {
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);

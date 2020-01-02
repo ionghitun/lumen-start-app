@@ -18,11 +18,11 @@ class EmailService
      * Send code on email for forgot password
      *
      * @param User $user
-     * @param $language
+     * @param $languageCode
      */
-    public function sendForgotPasswordCode(User $user, $language)
+    public function sendForgotPasswordCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $language . '.forgot', ['user' => $user], function ($message) use ($user) {
+        Mail::send('emails.' . $languageCode . '.forgot', ['user' => $user], function ($message) use ($user) {
             $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
             $message->subject(env('APP_NAME') . ' - Forgot password code');
 
@@ -34,11 +34,11 @@ class EmailService
      * Send code on email for account activation
      *
      * @param $user
-     * @param $language
+     * @param $languageCode
      */
-    public function sendActivationCode(User $user, $language)
+    public function sendActivationCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $language . '.activation', ['user' => $user],
+        Mail::send('emails.' . $languageCode . '.activation', ['user' => $user],
             function ($message) use ($user) {
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->subject(env('APP_NAME') . ' - Activate account');
@@ -51,11 +51,11 @@ class EmailService
      * Send code on email for email change
      *
      * @param $user
-     * @param $language
+     * @param $languageCode
      */
-    public function sendEmailConfirmationCode(User $user, $language)
+    public function sendEmailConfirmationCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $language . '.emailConfirmation', ['user' => $user],
+        Mail::send('emails.' . $languageCode . '.emailConfirmation', ['user' => $user],
             function ($message) use ($user) {
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->subject(env('APP_NAME') . ' - Confirm email');

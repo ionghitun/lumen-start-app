@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->bigInteger('language_id')->unsigned();
             $table->binary('email')->nullable();
             $table->string('password', 100)->nullable();
-            $table->text('picture');
+            $table->text('picture')->nullable();
             $table->tinyInteger('status')->default(User::STATUS_UNCONFIRMED);
             $table->string('activation_code', 50)->nullable();
             $table->string('forgot_code', 50)->nullable();

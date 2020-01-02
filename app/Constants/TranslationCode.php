@@ -52,6 +52,9 @@ class TranslationCode
     const ERROR_ACCESS_TOKEN_REQUIRED = 'error.accessToken.required';
 
     /** @var string */
+    const ERROR_ACCESS_TOKEN_INVALID = 'error.accessToken.invalid';
+
+    /** @var string */
     const ERROR_TOKEN_MISMATCH = 'errors.token.mismatch';
 
     /** @var string */

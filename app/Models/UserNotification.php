@@ -16,17 +16,10 @@ class UserNotification extends Model
 
     /** @var int */
     const STATUS_UNREAD = 0;
+
     /** @var int */
     const STATUS_READ = 1;
-    public $id;
-    public $user_id;
-    public $message;
-    public $ref_name;
-    public $ref_id;
-    public $status;
-    public $created_at;
-    public $updated_at;
-    public $deleted_at;
+
     /** @var bool */
     public $timestamps = true;
 

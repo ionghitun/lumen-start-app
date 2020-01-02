@@ -21,26 +21,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     /** @var int */
     const STATUS_UNCONFIRMED = 0;
+
     /** @var int */
     const STATUS_CONFIRMED = 1;
+
     /** @var int */
     const STATUS_EMAIL_UNCONFIRMED = 2;
-    public $id;
-    public $name;
-    public $language_id;
-    public $email;
-    public $password;
-    public $picture;
-    public $status;
-    public $activation_code;
-    public $forgot_code;
-    public $forgot_time;
-    public $facebook_id;
-    public $twitter_id;
-    public $google_id;
-    public $created_at;
-    public $updated_at;
-    public $deleted_at;
+
     /** @var bool */
     public $timestamps = true;
 

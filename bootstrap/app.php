@@ -84,6 +84,7 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Illuminate\Mail\MailServiceProvider::class);
 $app->register(Intervention\Image\ImageServiceProviderLumen::class);
 $app->register(Laravel\Socialite\SocialiteServiceProvider::class);
+$app->register(IonGhitun\MysqlEncryption\MysqlEncryptionServiceProvider::class);
 
 $app->configure('database');
 $app->configure('mail');

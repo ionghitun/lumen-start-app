@@ -304,7 +304,7 @@ class UserService
     {
         $rules = [
             'name' => 'required|alpha_spaces',
-            'email' => 'required|email|unique_binary:users,email',
+            'email' => 'required|email|unique_encrypted:users,email',
             'password' => 'required|min:6'
         ];
 
@@ -313,7 +313,7 @@ class UserService
             'name.alpha_spaces' => TranslationCode::ERROR_NAME_ALPHA_SPACES,
             'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.unique_binary' => TranslationCode::ERROR_EMAIL_REGISTERED,
+            'email.unique_encrypted' => TranslationCode::ERROR_EMAIL_REGISTERED,
             'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED,
             'password.min' => TranslationCode::ERROR_PASSWORD_MIN6
         ];
@@ -457,13 +457,13 @@ class UserService
     public function validateForgotPasswordRequest(Request $request)
     {
         $rules = [
-            'email' => 'required|email|exists_binary:users,email'
+            'email' => 'required|email|exists_encrypted:users,email'
         ];
 
         $messages = [
             'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.exists_binary' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED
+            'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -498,7 +498,7 @@ class UserService
     public function validateChangePasswordRequest(Request $request)
     {
         $rules = [
-            'email' => 'required|email|exists_binary:users,email',
+            'email' => 'required|email|exists_encrypted:users,email',
             'code' => 'required',
             'password' => 'required|min:6'
         ];
@@ -506,7 +506,7 @@ class UserService
         $messages = [
             'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.exists_binary' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED,
+            'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED,
             'code.required' => TranslationCode::ERROR_CODE_REQUIRED,
             'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED,
             'password.min' => TranslationCode::ERROR_PASSWORD_MIN6

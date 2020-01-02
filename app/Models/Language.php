@@ -14,13 +14,6 @@ class Language extends Model
 {
     use SoftDeletes;
 
-    public $id;
-    public $name;
-    public $code;
-    public $created_at;
-    public $updated_at;
-    public $deleted_at;
-
     /** @var bool */
     public $timestamps = true;
 

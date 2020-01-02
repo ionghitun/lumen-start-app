@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d3263a4b4d3eb5d4d01d2109dac6d22",
+    "content-hash": "7535111fd3ca2115138f6307f689c4f3",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -191,27 +191,26 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.12",
+            "version": "2.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "a6255605af39f2db7f5cb62e672bd8a7bad8d208"
+                "reference": "834593d5900615639208417760ba6a17299e2497"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/a6255605af39f2db7f5cb62e672bd8a7bad8d208",
-                "reference": "a6255605af39f2db7f5cb62e672bd8a7bad8d208",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/834593d5900615639208417760ba6a17299e2497",
+                "reference": "834593d5900615639208417760ba6a17299e2497",
                 "shasum": ""
             },
             "require": {
                 "doctrine/lexer": "^1.0.1",
-                "php": ">= 5.5"
+                "php": ">=5.5"
             },
             "require-dev": {
-                "dominicsayers/isemail": "dev-master",
-                "phpunit/phpunit": "^4.8.35||^5.7||^6.0",
-                "satooshi/php-coveralls": "^1.0.1",
-                "symfony/phpunit-bridge": "^4.4@dev"
+                "dominicsayers/isemail": "^3.0.7",
+                "phpunit/phpunit": "^4.8.36|^7.5.15",
+                "satooshi/php-coveralls": "^1.0.1"
             },
             "suggest": {
                 "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
@@ -245,20 +244,20 @@
                 "validation",
                 "validator"
             ],
-            "time": "2019-12-20T12:49:39+00:00"
+            "time": "2019-12-30T08:14:25+00:00"
         },
         {
             "name": "erusev/parsedown",
-            "version": "1.7.3",
+            "version": "1.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "6d893938171a817f4e9bc9e86f2da1e370b7bcd7"
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/6d893938171a817f4e9bc9e86f2da1e370b7bcd7",
-                "reference": "6d893938171a817f4e9bc9e86f2da1e370b7bcd7",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
                 "shasum": ""
             },
             "require": {
@@ -291,7 +290,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2019-03-17T18:48:37+00:00"
+            "time": "2019-12-30T22:54:17+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -1840,16 +1839,16 @@
         },
         {
             "name": "ionghitun/jwt-token",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ionghitun/jwt-token.git",
-                "reference": "24feafd99d1e21249f8c5b2ff9820921281974dd"
+                "reference": "5f2302236bd3c0cb9c6f35dbfdc3619b2c4c2f7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ionghitun/jwt-token/zipball/24feafd99d1e21249f8c5b2ff9820921281974dd",
-                "reference": "24feafd99d1e21249f8c5b2ff9820921281974dd",
+                "url": "https://api.github.com/repos/ionghitun/jwt-token/zipball/5f2302236bd3c0cb9c6f35dbfdc3619b2c4c2f7c",
+                "reference": "5f2302236bd3c0cb9c6f35dbfdc3619b2c4c2f7c",
                 "shasum": ""
             },
             "require": {
@@ -1885,20 +1884,20 @@
                 "lumen",
                 "token"
             ],
-            "time": "2019-12-24T19:59:16+00:00"
+            "time": "2020-01-01T22:34:38+00:00"
         },
         {
             "name": "ionghitun/laravel-lumen-mysql-encryption",
-            "version": "1.1.3",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ionghitun/laravel-lumen-mysql-encryption.git",
-                "reference": "a0c8b7686e8b4d23a1be6fee8d61a5560b444160"
+                "reference": "a58ecc3c4c8148186195bec03e0ceb2fe7e297e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/a0c8b7686e8b4d23a1be6fee8d61a5560b444160",
-                "reference": "a0c8b7686e8b4d23a1be6fee8d61a5560b444160",
+                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/a58ecc3c4c8148186195bec03e0ceb2fe7e297e3",
+                "reference": "a58ecc3c4c8148186195bec03e0ceb2fe7e297e3",
                 "shasum": ""
             },
             "require": {
@@ -1945,20 +1944,20 @@
                 "lumen",
                 "mysql"
             ],
-            "time": "2019-12-24T19:22:24+00:00"
+            "time": "2020-01-02T10:57:38+00:00"
         },
         {
             "name": "laravel/lumen-framework",
-            "version": "v6.2.0",
+            "version": "v6.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/lumen-framework.git",
-                "reference": "a19015569890fadfb70c8af23d072016fab83cba"
+                "reference": "ffa356c72e374b6a2c4e8880378f3133cb3b7385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/lumen-framework/zipball/a19015569890fadfb70c8af23d072016fab83cba",
-                "reference": "a19015569890fadfb70c8af23d072016fab83cba",
+                "url": "https://api.github.com/repos/laravel/lumen-framework/zipball/ffa356c72e374b6a2c4e8880378f3133cb3b7385",
+                "reference": "ffa356c72e374b6a2c4e8880378f3133cb3b7385",
                 "shasum": ""
             },
             "require": {
@@ -2029,7 +2028,7 @@
                 "laravel",
                 "lumen"
             ],
-            "time": "2019-10-15T18:30:14+00:00"
+            "time": "2019-12-26T14:51:41+00:00"
         },
         {
             "name": "laravel/socialite",
