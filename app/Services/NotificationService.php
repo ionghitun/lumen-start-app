@@ -19,9 +19,7 @@ class NotificationService
      */
     public function sendNotification(UserNotification $notification)
     {
-        $notificationData = $notification->toArray();
-
-        event(new NotificationEvent($notificationData, $notification->user_id));
+        event(new NotificationEvent($notification->toArray(), $notification->user_id));
     }
 
     /**

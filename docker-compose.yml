@@ -14,7 +14,7 @@ services:
       - lumen-mysql
       - lumen-redis
     environment:
-      XDEBUG_CONFIG: "remote_host=10.0.75.1"
+      XDEBUG_CONFIG: 'remote_host=10.0.75.1'
     networks:
       - lumen
 
@@ -31,7 +31,7 @@ services:
     depends_on:
       - lumen-php
     environment:
-      VIRTUAL_HOST: "lumen.local.ro"
+      VIRTUAL_HOST: 'lumen.local.ro'
     networks:
       - lumen
       - nginx-proxy

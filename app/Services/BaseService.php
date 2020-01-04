@@ -18,6 +18,55 @@ use Intervention\Image\Facades\Image;
 class BaseService
 {
     /**
+     * Apply search
+     *
+     * @param $builder
+     * @param $term
+     *
+     * @return mixed
+     */
+    public function applySearch($builder, $term)
+    {
+        $builder->where(function ($query) use ($term) {
+            foreach ($query->getModel()->getSearchable() as $searchColumn) {
+                if (in_array($searchColumn, $query->getModel()->getEncrypted())) {
+                    $query->orWhereEncrypted($searchColumn, '%' . $term . '%');
+                } else {
+                    $query->orWhere($searchColumn, 'LIKE', '%' . $term . '%');
+                }
+            }
+        });
+
+        return $builder;
+    }
+
+    /**
+     * Apply sort params.
+     *
+     * @param Request $request
+     * @param $builder
+     *
+     * @return mixed
+     */
+    public function applySortParams(Request $request, $builder)
+    {
+        if ($request->has('sortColumn') || $request->has('sortOrder')) {
+            $sortColumn = strtolower($request->get('sortColumn', 'id'));
+            $sortOrder = strtolower($request->get('sortOrder', 'asc'));
+
+            if (in_array($sortColumn, $builder->getModel()->getSortable()) && in_array($sortOrder, ['asc', 'desc'])) {
+                if (in_array($sortColumn, $builder->getModel()->getEncrypted())) {
+                    return $builder->orderByEncrypted($sortColumn, $sortOrder);
+                }
+
+                return $builder->orderBy($sortColumn, $sortOrder);
+            }
+        }
+
+        return $builder;
+    }
+
+    /**
      * Get pagination offset and limit.
      *
      * @param Request $request
@@ -53,28 +102,6 @@ class BaseService
             'offset' => $offset,
             'limit' => $limit
         ];
-    }
-
-    /**
-     * Apply sort params.
-     *
-     * @param Request $request
-     * @param $builder
-     *
-     * @return mixed
-     */
-    public function applySortParams(Request $request, $builder)
-    {
-        if ($request->has('sortColumn') || $request->has('sortOrder')) {
-            $sortColumn = strtolower($request->get('sortColumn', 'id'));
-            $sortOrder = strtolower($request->get('sortOrder', 'asc'));
-
-            if (in_array($sortColumn, $builder->getModel()->getSortable()) && in_array($sortOrder, ['asc', 'desc'])) {
-                return $builder->orderBy($sortColumn, $sortOrder);
-            }
-        }
-
-        return $builder;
     }
 
     /**
@@ -130,7 +157,7 @@ class BaseService
             }
         }
 
-        $language = Language::where('code', env('APP_LANGUAGE'))->first();
+        $language = Language::where('code', env('APP_LOCALE'))->first();
 
         if ($language) {
             return $language;

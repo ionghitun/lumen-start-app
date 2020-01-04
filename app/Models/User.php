@@ -89,6 +89,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /** @var array */
+    protected $searchable = [
+        'name',
+        'email'
+    ];
+
+    /** @var array */
     protected $encrypted = [
         'name',
         'email'

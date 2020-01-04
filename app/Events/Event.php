@@ -12,10 +12,4 @@ use Illuminate\Queue\SerializesModels;
 abstract class Event
 {
     use SerializesModels;
-
-    public $id;
-    public $relations;
-    public $class;
-    public $connection;
-    public $keyBy;
 }

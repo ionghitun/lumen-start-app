@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Constants\TranslationCode;
 use App\Models\User;
 use App\Models\UserToken;
@@ -18,11 +17,11 @@ use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 /**
- * Class AuthController
+ * Class LoginController
  *
  * @package App\Http\Controllers
  */
-class AuthController extends Controller
+class LoginController extends Controller
 {
     /** @var UserService */
     private $userService;
@@ -67,7 +66,7 @@ class AuthController extends Controller
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -111,7 +110,7 @@ class AuthController extends Controller
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -160,7 +159,7 @@ class AuthController extends Controller
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -209,7 +208,7 @@ class AuthController extends Controller
 
             return $this->successResponse($loginData);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -241,7 +240,7 @@ class AuthController extends Controller
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }

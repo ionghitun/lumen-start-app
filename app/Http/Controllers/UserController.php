@@ -61,7 +61,7 @@ class UserController extends Controller
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -95,13 +95,13 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $this->userService->sendForgotPasswordCode($user, $this->baseService->getLanguage($request));
+            $this->userService->sendForgotPasswordCode($user, $user->language);
 
             DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -144,7 +144,7 @@ class UserController extends Controller
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -178,7 +178,7 @@ class UserController extends Controller
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -202,7 +202,7 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $error = $this->userService->resendRegisterMail($request, $this->baseService->getLanguage($request));
+            $error = $this->userService->resendRegisterMail($request);
 
             DB::commit();
 
@@ -212,7 +212,7 @@ class UserController extends Controller
                 return $this->userErrorResponse($error);
             }
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -226,9 +226,7 @@ class UserController extends Controller
     public function getUser()
     {
         try {
-            $user = Auth::user();
-
-            return $this->successResponse($user);
+            return $this->successResponse(Auth::user());
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 
@@ -273,13 +271,13 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            $this->userService->updateLoggedUser($user, $request);
+            $this->userService->updateLoggedUser($user, $request, $this->baseService->getLanguage($request));
 
             DB::commit();
 
             return $this->successResponse($user);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }
@@ -309,7 +307,7 @@ class UserController extends Controller
 
             return $this->successResponse();
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }

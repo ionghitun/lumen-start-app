@@ -42,6 +42,10 @@ class TaskController extends Controller
         try {
             $userTasks = $this->taskService->getUserTasksBuilder($request);
 
+            if ($request->has('search')) {
+                $userTasks = $this->baseService->applySearch($userTasks, $request->get('search'));
+            }
+
             $userTasks = $this->baseService->applySortParams($request, $userTasks);
 
             $paginationParams = $this->baseService->getPaginationParams($request);
@@ -52,7 +56,7 @@ class TaskController extends Controller
 
             return $this->successResponse($userTasks, $pagination);
         } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }

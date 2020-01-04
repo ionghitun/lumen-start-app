@@ -57,6 +57,11 @@ class UserNotification extends Model
         'updated_at',
     ];
 
+    /** @var array */
+    protected $searchable = [
+        'message'
+    ];
+
     /**
      * User.
      *

@@ -34,6 +34,9 @@ class TranslationCode
     const ERROR_ACCOUNT_UNACTIVATED = 'errors.account.unactivated';
 
     /** @var string */
+    const ERROR_ACCOUNT_ACTIVATED = 'errors.account.activated';
+
+    /** @var string */
     const ERROR_REMEMBER_TOKEN_REQUIRED = 'errors.rememberToken.required';
 
     /** @var string */

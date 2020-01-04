@@ -16,6 +16,9 @@ class Model extends BaseModel
     /** @var array */
     protected $sortable = [];
 
+    /** @var array */
+    protected $searchable = [];
+
     /**
      * Get sortable columns
      *
@@ -24,5 +27,15 @@ class Model extends BaseModel
     public function getSortable()
     {
         return $this->sortable;
+    }
+
+    /**
+     * Get searchable columns
+     *
+     * @return array
+     */
+    public function getSearchable()
+    {
+        return $this->searchable;
     }
 }

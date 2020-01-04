@@ -17,10 +17,10 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
     $router->get('/', ['uses' => 'ApiController@version']);
 
     /** Users routes */
-    $router->post('/login', ['uses' => 'AuthController@login']);
-    $router->post('/login-token', ['uses' => 'AuthController@loginWithRememberToken']);
-    $router->post('/login-facebook', ['uses' => 'AuthController@loginWithFacebook']);
-    $router->post('/login-google', ['uses' => 'AuthController@loginWithGoogle']);
+    $router->post('/login', ['uses' => 'LoginController@login']);
+    $router->post('/login-token', ['uses' => 'LoginController@loginWithRememberToken']);
+    $router->post('/login-facebook', ['uses' => 'LoginController@loginWithFacebook']);
+    $router->post('/login-google', ['uses' => 'LoginController@loginWithGoogle']);
     $router->post('/register', ['uses' => 'UserController@register']);
     $router->post('/forgot-password', ['uses' => 'UserController@forgotPassword']);
     $router->post('/change-password', ['uses' => 'UserController@changePassword']);
@@ -31,7 +31,7 @@ $router->group(['middleware' => 'cors'], function () use ($router) {
 /** Routes with auth */
 $router->group(['middleware' => ['cors', 'auth']], function () use ($router) {
     /** Users routes */
-    $router->post('/logout', ['uses' => 'AuthController@logout']);
+    $router->post('/logout', ['uses' => 'LoginController@logout']);
     $router->group(['prefix' => 'user'], function () use ($router) {
         $router->get('', ['uses' => 'UserController@getUser']);
         $router->patch('', ['uses' => 'UserController@updateUser']);

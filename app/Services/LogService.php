@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -17,25 +18,26 @@ class LogService
      * Get full trace of an exception.
      *
      * @param Exception $exception
+     * @param Request|null $request
      *
      * @return string
      */
-    public static function getExceptionTraceAsString(Exception $exception)
+    public static function getExceptionTraceAsString(Exception $exception, Request $request = null)
     {
-        $errorString = "#00 User: ";
-
         /** @var User|null $user */
         $user = Auth::user();
 
-        if ($user) {
-            $errorString .= $user->id . ' ' . $user->name;
+        $errorString = '#00 Exception: ' . $exception->getCode() . ' --- ' . $exception->getMessage() . "\n";
+        $errorString .= '#01 User: ' . ($user ? $user->id . ' --- ' . $user->name : '') . "\n";
+
+        if ($request) {
+            $errorString .= '#02 Request: ' . json_encode($request->all()) . "\n";
         }
 
-        $errorString .= "\n";
         $count = 0;
 
         foreach ($exception->getTrace() as $frame) {
-            $args = "";
+            $args = '';
 
             if (isset($frame['args'])) {
                 $args = self::getFrameArgs($frame['args']);
@@ -69,13 +71,13 @@ class LogService
 
         foreach ($frameArgs as $arg) {
             if (is_string($arg)) {
-                $args[] = "'" . $arg . "'";
+                $args[] = '\'' . $arg . '\'';
             } elseif (is_array($arg)) {
-                $args[] = "Array";
+                $args[] = 'Array';
             } elseif (is_null($arg)) {
                 $args[] = 'NULL';
             } elseif (is_bool($arg)) {
-                $args[] = ($arg) ? "true" : "false";
+                $args[] = ($arg) ? 'true' : 'false';
             } elseif (is_object($arg)) {
                 $args[] = get_class($arg);
             } elseif (is_resource($arg)) {
@@ -85,6 +87,6 @@ class LogService
             }
         }
 
-        return join(", ", $args);
+        return join(', ', $args);
     }
 }

@@ -21,8 +21,6 @@ use Laravel\Socialite\Two\User as SocialiteUser;
 /**
  * Class UserService
  *
- * TODO
- *
  * @package App\Services
  */
 class UserService
@@ -356,8 +354,9 @@ class UserService
      *
      * @param User $user
      * @param Request $request
+     * @param Language $language
      */
-    public function updateLoggedUser(User &$user, Request $request)
+    public function updateLoggedUser(User &$user, Request $request, Language $language)
     {
         $email = $request->get('email');
         $confirmEmail = false;
@@ -376,8 +375,6 @@ class UserService
 
         $user->name = $request->get('name');
 
-        /** @var Language $language */
-        $language = Language::where('id', $request->get('language'))->first();
         $user->language_id = $language->id;
 
         if ($confirmEmail) {
@@ -630,11 +627,10 @@ class UserService
      * Resend registration mail
      *
      * @param Request $request
-     * @param Language $language
      *
      * @return array|bool
      */
-    public function resendRegisterMail(Request $request, Language $language)
+    public function resendRegisterMail(Request $request)
     {
         $user = User::whereEncrypted('email', $request->get('email'))->first();
 
@@ -643,7 +639,7 @@ class UserService
         }
 
         if ($user->status === User::STATUS_CONFIRMED) {
-            return ['account' => TranslationCode::ERROR_ACCOUNT_UNACTIVATED];
+            return ['account' => TranslationCode::ERROR_ACCOUNT_ACTIVATED];
         }
 
         if ($user->updated_at->addMinute() > Carbon::now()) {
@@ -653,7 +649,7 @@ class UserService
         /** @var EmailService $emailService */
         $emailService = new EmailService();
 
-        $emailService->sendActivationCode($user, $language->code);
+        $emailService->sendActivationCode($user, $user->language->code);
 
         $user->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $user->save();

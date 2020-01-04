@@ -44,6 +44,12 @@ class Language extends Model
         'updated_at'
     ];
 
+    /** @var array */
+    protected $searchable = [
+        'name',
+        'code'
+    ];
+
     /**
      * language users.
      *

@@ -8,7 +8,6 @@ use App\Services\BaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use IonGhitun\JwtToken\Exceptions\JwtException;
 use IonGhitun\JwtToken\Jwt;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
@@ -53,12 +52,11 @@ class Controller extends BaseController
     /**
      * Success response
      *
-     * @param $data
-     * @param $pagination
-     * @param $refreshToken
-     * @return JsonResponse
+     * @param null $data
+     * @param null $pagination
+     * @param null $refreshToken
      *
-     * @throws JwtException
+     * @return JsonResponse
      */
     protected function successResponse($data = null, $pagination = null, $refreshToken = null)
     {
@@ -77,8 +75,6 @@ class Controller extends BaseController
      * Build the response.
      *
      * @return JsonResponse
-     *
-     * @throws JwtException
      */
     private function buildResponse()
     {
@@ -106,10 +102,9 @@ class Controller extends BaseController
      * Return user fault response.
      *
      * @param $errorMessage
-     * @param $refreshToken
-     * @return JsonResponse
+     * @param null $refreshToken
      *
-     * @throws JwtException
+     * @return JsonResponse
      */
     protected function userErrorResponse($errorMessage, $refreshToken = null)
     {

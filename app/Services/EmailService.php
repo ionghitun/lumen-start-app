@@ -3,12 +3,11 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 
 /**
  * Class EmailService
- *
- * TODO refactor whole class.
  *
  * @package App\Services
  */
@@ -22,9 +21,11 @@ class EmailService
      */
     public function sendForgotPasswordCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $languageCode . '.forgot', ['user' => $user], function ($message) use ($user) {
+        Lang::setLocale($languageCode);
+
+        Mail::send('emails.forgot', ['user' => $user], function ($message) use ($user) {
             $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-            $message->subject(env('APP_NAME') . ' - Forgot password code');
+            $message->subject(Lang::get('forgot.subject'));
 
             $message->to($user->email);
         });
@@ -38,10 +39,12 @@ class EmailService
      */
     public function sendActivationCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $languageCode . '.activation', ['user' => $user],
+        Lang::setLocale($languageCode);
+
+        Mail::send('emails.activation', ['user' => $user],
             function ($message) use ($user) {
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                $message->subject(env('APP_NAME') . ' - Activate account');
+                $message->subject(Lang::get('activate.subject'));
 
                 $message->to($user->email);
             });
@@ -55,10 +58,12 @@ class EmailService
      */
     public function sendEmailConfirmationCode(User $user, $languageCode)
     {
-        Mail::send('emails.' . $languageCode . '.emailConfirmation', ['user' => $user],
+        Lang::setLocale($languageCode);
+
+        Mail::send('emails.emailChange', ['user' => $user],
             function ($message) use ($user) {
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                $message->subject(env('APP_NAME') . ' - Confirm email');
+                $message->subject(Lang::get('emailChange.subject'));
 
                 $message->to($user->email);
             });

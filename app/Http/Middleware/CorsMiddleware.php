@@ -24,14 +24,14 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        header("Access-Control-Allow-Origin: *");
+        header('Access-Control-Allow-Origin: *');
 
         $headers = [
             'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, DELETE, PATCH',
             'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin, Authorization',
         ];
 
-        if ($request->getMethod() == "OPTIONS") {
+        if ($request->getMethod() == 'OPTIONS') {
             return response('OK', Response::HTTP_OK, $headers);
         }
 

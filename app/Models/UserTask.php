@@ -59,6 +59,11 @@ class UserTask extends Model
         'updated_at',
     ];
 
+    /** @var array */
+    protected $searchable = [
+        'description'
+    ];
+
     /**
      * User.
      *

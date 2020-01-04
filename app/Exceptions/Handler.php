@@ -64,7 +64,7 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
-        Log::error(LogService::getExceptionTraceAsString($exception));
+        Log::error(LogService::getExceptionTraceAsString($exception, $request));
 
         $response = [
             'isError' => true,

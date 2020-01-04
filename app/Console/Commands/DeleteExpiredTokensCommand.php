@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Class DeleteExpiredTokensCommand
+ * Class DeleteExpiredTokensCommand.
  *
  * Delete all expired token.
  * Should be running once a day.
@@ -22,41 +22,50 @@ use Illuminate\Support\Facades\Log;
 class DeleteExpiredTokensCommand extends Command
 {
     /** @var string */
-    protected $signature = "delete:expiredTokens";
+    protected $signature = 'delete:expiredTokens';
 
     /** @var string */
-    protected $description = "Remove expired tokens from database.";
+    protected $description = 'Remove expired tokens from database.';
 
     /**
-     * Command handle
-     *
-     * We delete separate each token in case we add something to model boot.
+     * Command handle.
      */
     public function handle()
     {
         try {
-            $this->info("Command [delete:expiredTokens] start: " . Carbon::now()->format('Y-m-d H:i:s'));
+            $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Command [delete:expiredTokens] started.');
 
             DB::beginTransaction();
 
-            /** @var Collection $userTokens */
-            $userTokens = UserToken::where('expire_on', '<=', Carbon::now()->format('Y-m-d H:i:s'))
-                ->get();
-
-            $this->info("Found " . $userTokens->count() . "tokens to be removed.");
-
-            /** @var UserToken $userToken */
-            foreach ($userTokens as $userToken) {
-                $userToken->delete();
-            }
+            $this->removeExpiredTokens();
 
             DB::commit();
 
-            $this->info("Command [delete:expiredTokens] end: " . Carbon::now()->format('Y-m-d H:i:s'));
+            $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Command [delete:expiredTokens] ended.');
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 
             $this->error($e->getMessage());
+        }
+    }
+
+    /**
+     * Remove expired tokens.
+     * We delete separate each token in case we add something to model boot.
+     *
+     * @throws Exception
+     */
+    private function removeExpiredTokens()
+    {
+        /** @var Collection $userTokens */
+        $userTokens = UserToken::where('expire_on', '<=', Carbon::now()->format('Y-m-d H:i:s'))
+            ->get();
+
+        $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Found ' . $userTokens->count() . ' tokens to be removed.');
+
+        /** @var UserToken $userToken */
+        foreach ($userTokens as $userToken) {
+            $userToken->delete();
         }
     }
 }

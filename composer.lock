@@ -1888,16 +1888,16 @@
         },
         {
             "name": "ionghitun/laravel-lumen-mysql-encryption",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ionghitun/laravel-lumen-mysql-encryption.git",
-                "reference": "7a06a7785e74889ed976febc94361fa2f2fa69c9"
+                "reference": "ead959a904473bd79b233c147415bc641b5a8c74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/7a06a7785e74889ed976febc94361fa2f2fa69c9",
-                "reference": "7a06a7785e74889ed976febc94361fa2f2fa69c9",
+                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/ead959a904473bd79b233c147415bc641b5a8c74",
+                "reference": "ead959a904473bd79b233c147415bc641b5a8c74",
                 "shasum": ""
             },
             "require": {
@@ -1944,7 +1944,7 @@
                 "lumen",
                 "mysql"
             ],
-            "time": "2020-01-03T17:10:25+00:00"
+            "time": "2020-01-04T11:02:25+00:00"
         },
         {
             "name": "laravel/lumen-framework",
