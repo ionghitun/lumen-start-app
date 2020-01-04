@@ -27,7 +27,7 @@ The project is docker ready via docker-compose, `.env.example` contains default 
 1. Same json response structure when in production.
 2. Valid for CORS.
 3. GDPR compliant, sensitive fields are encrypted in database, anonymize data using https://github.com/ionghitun/laravel-lumen-mysql-encryption.
-4. Translations ready, application who consume this api can add their own texts.
+4. Translations ready, application who consume this api can add their own texts, for emails see `resources/lang`
 5. Error management, any error is catch.
 6. User registration with account activation (user will receive an email with code), resend activation code.
 7. User login with possibility to be remembered, login generates a JWT token using https://github.com/ionghitun/jwt-token.
@@ -38,3 +38,5 @@ The project is docker ready via docker-compose, `.env.example` contains default 
 12. Notifications with emitting event (broadcast).
 13. Started CRUD example (users tasks).
 14. Started adding routes to postman collection available in `docs/lumenStartApp.postman_collection.json`.
+
+_Happy coding!_

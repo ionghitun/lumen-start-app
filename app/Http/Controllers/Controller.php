@@ -52,9 +52,9 @@ class Controller extends BaseController
     /**
      * Success response
      *
-     * @param null $data
-     * @param null $pagination
-     * @param null $refreshToken
+     * @param string|array|null $data
+     * @param array|null $pagination
+     * @param bool|null $refreshToken
      *
      * @return JsonResponse
      */
@@ -102,7 +102,7 @@ class Controller extends BaseController
      * Return user fault response.
      *
      * @param $errorMessage
-     * @param null $refreshToken
+     * @param bool|null $refreshToken
      *
      * @return JsonResponse
      */
