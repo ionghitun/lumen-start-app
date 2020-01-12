@@ -19,7 +19,6 @@
     "type": "project",
     "require": {
         "php": "^7.2",
-        "ext-json": "^1.7",
         "illuminate/mail": "^6.10",
         "illuminate/redis": "^6.10",
         "intervention/image": "^2.5",
