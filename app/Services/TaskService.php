@@ -27,11 +27,14 @@ class TaskService
         /** @var User $user */
         $user = Auth::user();
 
-        $userTasks = UserTask::with(['user', 'assignedUser'])
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('assigned_user_id', $user->id);
-            });
+        $userTasks = UserTask::with(['user' => function ($query) {
+            $query->select(['id', 'name']);
+        }, 'assignedUser' => function ($query) {
+            $query->select(['id', 'name']);
+        }])->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhere('assigned_user_id', $user->id);
+        });
 
         if ($request->has('search')) {
             $search = $request->get('search');

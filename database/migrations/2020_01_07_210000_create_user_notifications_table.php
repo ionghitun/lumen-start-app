@@ -22,7 +22,7 @@ class CreateUserNotificationsTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->text('message');
             $table->string('ref_name', 100)->nullable();
-            $table->bigInteger('ref_id')->unsigned()->nullable();
+            $table->bigInteger('ref_id')->unsigned()->nullable()->index();
             $table->tinyInteger('status')->default(UserNotification::STATUS_UNREAD);
             $table->timestamps();
             $table->softDeletes();

@@ -86,7 +86,7 @@ class UserController extends Controller
             $user = User::whereEncrypted('email', $request->get('email'))->first();
 
             if ($user->status === User::STATUS_UNCONFIRMED) {
-                return $this->userErrorResponse(['account' => TranslationCode::ERROR_ACCOUNT_UNACTIVATED]);
+                return $this->userErrorResponse(['account' => TranslationCode::ERROR_FORGOT_ACCOUNT_UNACTIVATED]);
             }
 
             if ($user->updated_at->addMinute() > Carbon::now()) {
@@ -171,7 +171,7 @@ class UserController extends Controller
             $activated = $this->userService->activateUserAccount($request->get('email'), $request->get('code'));
 
             if (!$activated) {
-                return $this->userErrorResponse(['code' => TranslationCode::ERROR_CODE_INVALID]);
+                return $this->userErrorResponse(['code' => TranslationCode::ERROR_ACTIVATE_CODE_WRONG]);
             }
 
             DB::commit();
@@ -261,12 +261,12 @@ class UserController extends Controller
                 $userExists = User::whereEncrypted('email', $email)->first();
 
                 if ($userExists) {
-                    return $this->userErrorResponse(['email' => TranslationCode::ERROR_EMAIL_REGISTERED]);
+                    return $this->userErrorResponse(['email' => TranslationCode::ERROR_UPDATE_EMAIL_REGISTERED]);
                 }
             }
 
             if ($request->has('newPassword') && !app('hash')->check($request->get('oldPassword'), $user->password)) {
-                return $this->userErrorResponse(['oldPassword' => TranslationCode::ERROR_OLD_PASSWORD_WRONG]);
+                return $this->userErrorResponse(['oldPassword' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_WRONG]);
             }
 
             DB::beginTransaction();

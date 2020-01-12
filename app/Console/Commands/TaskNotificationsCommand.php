@@ -28,7 +28,7 @@ class TaskNotificationsCommand extends Command
     protected $signature = 'send:taskNotifications';
 
     /** @var string */
-    protected $description = 'Send notifications when a task is expiring or is expired.';
+    protected $description = 'Send notifications when a task is expiring or has expired.';
 
     /** @var NotificationService */
     protected $notificationService;
@@ -82,7 +82,7 @@ class TaskNotificationsCommand extends Command
         foreach ($expiringUserTasks as $expiringUserTask) {
             $userNotification = $this->notificationService->addNotification(
                 $expiringUserTask->assigned_user_id,
-                TranslationCode::USER_TASK_EXPIRING,
+                TranslationCode::NOTIFICATION_USER_TASK_EXPIRING,
                 'userTask',
                 $expiringUserTask->id
             );
@@ -106,7 +106,7 @@ class TaskNotificationsCommand extends Command
         foreach ($expiredUserTasks as $expiredUserTask) {
             $userNotification = $this->notificationService->addNotification(
                 $expiredUserTask->assigned_user_id,
-                TranslationCode::USER_TASK_EXPIRED,
+                TranslationCode::NOTIFICATION_USER_TASK_EXPIRED,
                 'userTask',
                 $expiredUserTask->id
             );

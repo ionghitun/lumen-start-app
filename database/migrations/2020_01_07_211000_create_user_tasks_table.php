@@ -30,6 +30,7 @@ class CreateUserTasksTable extends Migration
 
         Schema::table('user_tasks', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('assigned_user_id')->references('id')->on('users');
         });
     }
 
@@ -42,6 +43,7 @@ class CreateUserTasksTable extends Migration
     {
         Schema::table('user_tasks', function (Blueprint $table) {
             $table->dropForeign('user_tasks_user_id_foreign');
+            $table->dropForeign('user_tasks_assigned_user_id_foreign');
         });
 
         Schema::dropIfExists('user_tasks');

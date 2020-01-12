@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call('LanguagesTableSeeder');
+        $this->call('PermissionsTableSeeder');
+        $this->call('RolesTableSeeder');
+        $this->call('RolesPermissionsTableSeeder');
 
         Model::reguard();
     }

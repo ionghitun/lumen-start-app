@@ -47,7 +47,7 @@ class Authenticate
             $response = [
                 'isError' => true,
                 'userFault' => true,
-                'errorMessage' => ['auth' => TranslationCode::ERROR_UNAUTHORIZED],
+                'errorMessage' => ['authorization' => TranslationCode::ERROR_UNAUTHORIZED],
                 'result' => null,
                 'pagination' => null
             ];

@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Models\Language;
+use App\Models\RolePermission;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
@@ -166,6 +168,30 @@ class BaseService
         throw new Exception('Application is bad configured!');
     }
 
+    /**
+     * Check if a logged user has permission on action
+     *
+     * @param $userId
+     * @param $permissionId
+     *
+     * @return RolePermission
+     */
+    public function getUserPermissionActions($userId, $permissionId)
+    {
+        return $rolePermission = Cache::tags(['permissions'])
+            ->remember(
+                'permission' . $userId . $permissionId,
+                env('CACHE_PERIOD'),
+                function () use ($userId, $permissionId) {
+                    return RolePermission::where('permission_id', $permissionId)
+                        ->whereHas('role', function ($query) use ($userId) {
+                            $query->whereHas('users', function ($query) use ($userId) {
+                                $query->where('id', $userId);
+                            });
+                        })->first();
+                }
+            );
+    }
 
     /**
      * Process images.
@@ -197,7 +223,7 @@ class BaseService
             $avatarPath = $path . 'avatar/';
             File::makeDirectory($avatarPath, 0777, true, true);
 
-            $avatarCanvas->save($avatarPath . $name);
+            $avatarCanvas->save($avatarPath . $name, 100);
 
             $pictureData['avatar'] = $avatarPath . $name;
         }
@@ -206,7 +232,7 @@ class BaseService
             return json_encode($pictureData);
         }
 
-        $mediumImage = Image::make($image)->resize(1024, null, function ($constraint) {
+        $mediumImage = Image::make($image)->resize(1024, 768, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();
         });
@@ -214,10 +240,10 @@ class BaseService
         $mediumPath = $path . 'medium/';
         File::makeDirectory($mediumPath, 0777, true, true);
 
-        $mediumImage->save($mediumPath . $name);
+        $mediumImage->save($mediumPath . $name, 100);
         $pictureData['medium'] = $mediumPath . $name;
 
-        $originalMaxImage = Image::make($image)->resize(1920, null, function ($constraint) {
+        $originalMaxImage = Image::make($image)->resize(1920, 1080, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();
         });
@@ -225,7 +251,7 @@ class BaseService
         $originalPath = $path . 'original/';
         File::makeDirectory($originalPath, 0777, true, true);
 
-        $originalMaxImage->save($originalPath . $name);
+        $originalMaxImage->save($originalPath . $name, 100);
         $pictureData['original'] = $originalPath . $name;
 
         return json_encode($pictureData);

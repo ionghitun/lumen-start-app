@@ -138,15 +138,15 @@ class LoginController extends Controller
                 /** @var SocialiteUser $facebookUser */
                 $facebookUser = Socialite::driver('facebook')->userFromToken($token);
             } catch (Exception $e) {
-                return $this->userErrorResponse(['token' => TranslationCode::ERROR_ACCESS_TOKEN_INVALID]);
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_FACEBOOK_ACCESS_TOKEN_INVALID]);
             }
 
             if ($facebookUser->getId() !== $request->get('facebookId')) {
-                return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_FACEBOOK_ACCESS_TOKEN_MISMATCH]);
             }
 
             if (!$facebookUser->getEmail()) {
-                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
+                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_FACEBOOK_PERMISSION_EMAIL]);
             }
 
             DB::beginTransaction();
@@ -187,15 +187,15 @@ class LoginController extends Controller
                 /** @var SocialiteUser $googleUser */
                 $googleUser = Socialite::driver('google')->userFromToken($token);
             } catch (Exception $e) {
-                return $this->userErrorResponse(['token' => TranslationCode::ERROR_ACCESS_TOKEN_INVALID]);
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_GOOGLE_ACCESS_TOKEN_INVALID]);
             }
 
             if ($googleUser->getId() !== $request->get('google_id')) {
-                return $this->userErrorResponse(['token' => TranslationCode::ERROR_TOKEN_MISMATCH]);
+                return $this->userErrorResponse(['token' => TranslationCode::ERROR_GOOGLE_ACCESS_TOKEN_MISMATCH]);
             }
 
             if (!$googleUser->getEmail()) {
-                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_PERMISSION_EMAIL]);
+                return $this->userErrorResponse(['permission' => TranslationCode::ERROR_GOOGLE_PERMISSION_EMAIL]);
             }
 
             DB::beginTransaction();

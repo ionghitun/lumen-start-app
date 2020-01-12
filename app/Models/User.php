@@ -37,11 +37,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /** @var array */
     protected $fillable = [
         'name',
-        'language_id',
         'email',
         'password',
         'picture',
         'status',
+        'language_id',
+        'role_id',
         'activation_code',
         'forgot_code',
         'forgot_time',
@@ -65,14 +66,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $visible = [
         'id',
         'name',
-        'language_id',
         'email',
         'picture',
         'status',
+        'language_id',
+        'role_id',
         'created_at',
         'updated_at',
         'language',
-        'userTokens',
+        'role',
         'userNotifications',
         'userTasks',
         'userAssignedTasks'
@@ -99,43 +101,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'name',
         'email'
     ];
-
-    /**
-     * User boot
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        /** Delete all user associations */
-        static::deleting(function ($user) {
-            if ($user->userTokens) {
-                foreach ($user->userTokens as $userToken) {
-                    $userToken->delete();
-                }
-            }
-
-            if ($user->userNotifications) {
-                foreach ($user->userNotifications as $userNotification) {
-                    $userNotification->delete();
-                }
-            }
-
-            if ($user->userTasks) {
-                foreach ($user->userTasks as $userTask) {
-                    $userTask->delete();
-                }
-            }
-
-            if ($user->userAssignedTasks) {
-                foreach ($user->userAssignedTasks as $userAssignedTask) {
-                    $userAssignedTask->assigned_user_id = $userAssignedTask->user_id;
-
-                    $userAssignedTask->save();
-                }
-            }
-        });
-    }
 
     /**
      * User tokens.
@@ -165,6 +130,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function language()
     {
         return $this->belongsTo(Language::class, 'language_id', 'id');
+    }
+
+    /**
+     * Role.
+     *
+     * @return BelongsTo
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
     /**

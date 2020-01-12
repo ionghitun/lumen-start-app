@@ -14,13 +14,15 @@ class LanguagesTableSeeder extends Seeder
     public function run()
     {
         Language::create([
+            'id' => Language::ID_EN,
             'name' => 'English',
-            'code' => 'en'
+            'code' => Language::CODE_EN
         ]);
 
         Language::create([
+            'id' => Language::ID_RO,
             'name' => 'Română',
-            'code' => 'ro'
+            'code' => Language::CODE_RO
         ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Constants\TranslationCode;
 use App\Models\Language;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserToken;
 use Carbon\Carbon;
@@ -78,8 +79,10 @@ class UserService
      */
     public function loginUser(array $credentials)
     {
+        $builder = $this->getUserBuilderForLogin();
+
         /** @var User|null $user */
-        $user = User::whereEncrypted('email', $credentials['email'])
+        $user = $builder->whereEncrypted('email', $credentials['email'])
             ->first();
 
         if (!$user) {
@@ -93,6 +96,24 @@ class UserService
         }
 
         return null;
+    }
+
+    /**
+     * Get user builder for login
+     *
+     * @return mixed
+     */
+    private function getUserBuilderForLogin()
+    {
+        return User::with(['role' => function ($query) {
+            $query->select(['id', 'name'])
+                ->with(['rolePermissions' => function ($query) {
+                    $query->select(['role_id', 'permission_id', 'read', 'create', 'update', 'delete', 'manage'])
+                        ->with(['permission' => function ($query) {
+                            $query->select(['id', 'name']);
+                        }]);
+                }]);
+        }]);
     }
 
     /**
@@ -152,7 +173,9 @@ class UserService
      */
     public function loginUserWithRememberToken($token)
     {
-        return User::whereHas('userTokens', function ($query) use ($token) {
+        $builder = $this->getUserBuilderForLogin();
+
+        return $builder->whereHas('userTokens', function ($query) use ($token) {
             $query->where('token', $token)
                 ->where('expire_on', '>=', Carbon::now()->format('Y-m-d H:i:s'));
         })->first();
@@ -193,29 +216,7 @@ class UserService
 
         $messages = [
             'facebookId.required' => TranslationCode::ERROR_FACEBOOK_ID_REQUIRED,
-            'accessToken.required' => TranslationCode::ERROR_ACCESS_TOKEN_REQUIRED
-        ];
-
-        return Validator::make($request->all(), $rules, $messages);
-    }
-
-    /**
-     * Validate request on twitter login
-     *
-     * @param Request $request
-     *
-     * @return ReturnedValidator
-     */
-    public function validateTwitterLoginRequest(Request $request)
-    {
-        $rules = [
-            'twitterId' => 'required',
-            'accessToken' => 'required',
-        ];
-
-        $messages = [
-            'twitterId.required' => TranslationCode::ERROR_TWITTER_ID_REQUIRED,
-            'accessToken.required' => TranslationCode::ERROR_ACCESS_TOKEN_REQUIRED
+            'accessToken.required' => TranslationCode::ERROR_FACEBOOK_ACCESS_TOKEN_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -237,7 +238,7 @@ class UserService
 
         $messages = [
             'googleId.required' => TranslationCode::ERROR_GOOGLE_ID_REQUIRED,
-            'accessToken.required' => TranslationCode::ERROR_ACCESS_TOKEN_REQUIRED
+            'accessToken.required' => TranslationCode::ERROR_GOOGLE_ACCESS_TOKEN_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -254,11 +255,13 @@ class UserService
      */
     public function loginUserWithSocial(SocialiteUser $socialUser, Language $language, string $socialId)
     {
-        $user = User::where(function ($query) use ($socialUser, $socialId) {
+        $builder = $this->getUserBuilderForLogin();
+
+        /** @var User|null $user */
+        $user = $builder->where(function ($query) use ($socialUser, $socialId) {
             $query->where($socialId, $socialUser->getId())
                 ->orWhereEncrypted('email', $socialUser->getEmail());
         })->first();
-
 
         if (!$user) {
             $user = new User();
@@ -307,13 +310,13 @@ class UserService
         ];
 
         $messages = [
-            'name.required' => TranslationCode::ERROR_NAME_REQUIRED,
-            'name.alpha_spaces' => TranslationCode::ERROR_NAME_ALPHA_SPACES,
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.unique_encrypted' => TranslationCode::ERROR_EMAIL_REGISTERED,
-            'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_PASSWORD_MIN6
+            'name.required' => TranslationCode::ERROR_REGISTER_NAME_REQUIRED,
+            'name.alpha_spaces' => TranslationCode::ERROR_REGISTER_NAME_ALPHA_SPACES,
+            'email.required' => TranslationCode::ERROR_REGISTER_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_REGISTER_EMAIL_INVALID,
+            'email.unique_encrypted' => TranslationCode::ERROR_REGISTER_EMAIL_REGISTERED,
+            'password.required' => TranslationCode::ERROR_REGISTER_PASSWORD_REQUIRED,
+            'password.min' => TranslationCode::ERROR_REGISTER_PASSWORD_MIN6
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -336,14 +339,14 @@ class UserService
         ];
 
         $messages = [
-            'name.required' => TranslationCode::ERROR_NAME_REQUIRED,
-            'name.alpha_spaces' => TranslationCode::ERROR_NAME_ALPHA_SPACES,
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'newPassword.required_with' => TranslationCode::ERROR_OLD_PASSWORD_REQUIRED,
-            'newPassword.min' => TranslationCode::ERROR_PASSWORD_MIN6,
-            'language.required' => TranslationCode::ERROR_LANGUAGE_REQUIRED,
-            'language.exists' => TranslationCode::ERROR_LANGUAGE_EXISTS,
+            'name.required' => TranslationCode::ERROR_UPDATE_NAME_REQUIRED,
+            'name.alpha_spaces' => TranslationCode::ERROR_UPDATE_NAME_ALPHA_SPACES,
+            'email.required' => TranslationCode::ERROR_UPDATE_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_UPDATE_EMAIL_INVALID,
+            'newPassword.required_with' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
+            'newPassword.min' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN6,
+            'language.required' => TranslationCode::ERROR_UPDATE_LANGUAGE_REQUIRED,
+            'language.exists' => TranslationCode::ERROR_UPDATE_LANGUAGE_EXISTS,
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -400,8 +403,8 @@ class UserService
         ];
 
         $messages = [
-            'picture.required' => TranslationCode::ERROR_PICTURE_REQUIRED,
-            'picture.image' => TranslationCode::ERROR_PICTURE_IMAGE
+            'picture.required' => TranslationCode::ERROR_UPDATE_PICTURE_REQUIRED,
+            'picture.image' => TranslationCode::ERROR_UPDATE_PICTURE_IMAGE
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -458,9 +461,9 @@ class UserService
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED
+            'email.required' => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
+            'email.exists_encrypted' => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -501,12 +504,12 @@ class UserService
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED,
-            'code.required' => TranslationCode::ERROR_CODE_REQUIRED,
-            'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_PASSWORD_MIN6
+            'email.required' => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
+            'email.exists_encrypted' => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED,
+            'code.required' => TranslationCode::ERROR_FORGOT_CODE_REQUIRED,
+            'password.required' => TranslationCode::ERROR_FORGOT_PASSWORD_REQUIRED,
+            'password.min' => TranslationCode::ERROR_FORGOT_PASSWORD_MIN6
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -542,6 +545,7 @@ class UserService
         $user->password = $request->get('password');
         $user->status = User::STATUS_UNCONFIRMED;
         $user->language_id = $language->id;
+        $user->role_id = Role::ID_USER;
         $user->activation_code = strtoupper(Str::random(6));
 
         /** @var EmailService $emailService */
@@ -567,9 +571,9 @@ class UserService
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
-            'code.required' => TranslationCode::ERROR_CODE_REQUIRED
+            'email.required' => TranslationCode::ERROR_ACTIVATE_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID,
+            'code.required' => TranslationCode::ERROR_ACTIVATE_CODE_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -616,8 +620,8 @@ class UserService
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID
+            'email.required' => TranslationCode::ERROR_ACTIVATE_EMAIL_REQUIRED,
+            'email.email' => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -635,15 +639,15 @@ class UserService
         $user = User::whereEncrypted('email', $request->get('email'))->first();
 
         if (!$user) {
-            return ['email' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED];
+            return ['email' => TranslationCode::ERROR_ACTIVATE_EMAIL_NOT_REGISTERED];
         }
 
         if ($user->status === User::STATUS_CONFIRMED) {
-            return ['account' => TranslationCode::ERROR_ACCOUNT_ACTIVATED];
+            return ['account' => TranslationCode::ERROR_ACTIVATE_ACCOUNT_ACTIVATED];
         }
 
         if ($user->updated_at->addMinute() > Carbon::now()) {
-            return ['code' => TranslationCode::ERROR_CODE_SEND_COOLDOWN];
+            return ['code' => TranslationCode::ERROR_ACTIVATE_CODE_SEND_COOLDOWN];
         }
 
         /** @var EmailService $emailService */

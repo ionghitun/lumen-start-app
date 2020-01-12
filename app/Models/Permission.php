@@ -6,65 +6,59 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Language
+ * Class Permission
  *
  * @package App\Models
  */
-class Language extends Model
+class Permission extends Model
 {
     use SoftDeletes;
 
     /** @var int */
-    const ID_EN = 1;
+    const ID_USERS = 1;
 
     /** @var int */
-    const ID_RO = 2;
+    const ID_ROLES = 2;
 
-    /** @var string */
-    const CODE_EN = 'en';
-
-    /** @var string */
-    const CODE_RO = 'ro';
+    /** @var int */
+    const ID_TASKS = 3;
 
     /** @var bool */
     public $timestamps = true;
 
     /** @var string */
-    protected $table = 'languages';
+    protected $table = 'permissions';
 
     /** @var array */
     protected $fillable = [
-        'name',
-        'code'
+        'name'
     ];
 
     /** @var array */
     protected $visible = [
         'id',
         'name',
-        'code'
+        'rolePermissions'
     ];
 
     /** @var array */
     protected $sortable = [
         'id',
-        'name',
-        'code'
+        'name'
     ];
 
     /** @var array */
     protected $searchable = [
-        'name',
-        'code'
+        'name'
     ];
 
     /**
-     * language users.
+     * Role permissions.
      *
      * @return HasMany
      */
-    public function users()
+    public function rolePermissions()
     {
-        return $this->hasMany(User::class, 'language_id', 'id');
+        return $this->hasMany(RolePermission::class, 'permission_id', 'id');
     }
 }

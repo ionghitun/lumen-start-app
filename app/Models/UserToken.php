@@ -29,26 +29,10 @@ class UserToken extends Model
     ];
 
     /** @var array */
-    protected $visible = [
-        'id',
-        'user_id',
-        'token',
-        'type',
-        'expire_on',
-        'created_at',
-        'updated_at',
-        'user'
-    ];
+    protected $visible = [];
 
     /** @var array */
-    protected $sortable = [
-        'id',
-        'token',
-        'type',
-        'expire_on',
-        'created_at',
-        'updated_at',
-    ];
+    protected $sortable = [];
 
     /**
      * User.
