@@ -52,6 +52,6 @@ class Model extends BaseModel
      */
     public function getFilterable()
     {
-        return $this->searchable;
+        return $this->filterable;
     }
 }

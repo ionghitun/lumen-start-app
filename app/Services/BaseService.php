@@ -54,7 +54,7 @@ class BaseService
     public function applyFilters(Builder $builder, array $filters)
     {
         foreach ($filters as $filter => $value) {
-            if (in_array($filter, $builder->getModel()->getFiltrable())) {
+            if (in_array($filter, $builder->getModel()->getFilterable())) {
                 if (in_array($filter, $builder->getModel()->getEncrypted())) {
                     $builder->whereEncrypted($filter, $value);
                 } else {

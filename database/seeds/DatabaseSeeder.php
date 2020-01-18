@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
         $this->call('RolesPermissionsTableSeeder');
         $this->call('UsersTableSeeder');
 
+        /* Faker data for testing */
+        //$this->call('FakerSeeder');
+
         Model::reguard();
     }
 }

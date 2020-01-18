@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7679781f2b69c65995198aa6c9c4ec5",
+    "content-hash": "d4b293b158fa4b6c330bb489f02eb1b8",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -1794,21 +1794,21 @@
         },
         {
             "name": "ionghitun/jwt-token",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ionghitun/jwt-token.git",
-                "reference": "77d6d7adeee95f1f7edce509551b75c90786dab3"
+                "reference": "e59268684e9ad725c885b2fe30f8702b34a6fe9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ionghitun/jwt-token/zipball/77d6d7adeee95f1f7edce509551b75c90786dab3",
-                "reference": "77d6d7adeee95f1f7edce509551b75c90786dab3",
+                "url": "https://api.github.com/repos/ionghitun/jwt-token/zipball/e59268684e9ad725c885b2fe30f8702b34a6fe9f",
+                "reference": "e59268684e9ad725c885b2fe30f8702b34a6fe9f",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "nesbot/carbon": ">=1.0",
+                "nesbot/carbon": ">=2.0",
                 "php": ">=7.2"
             },
             "require-dev": {
@@ -1839,26 +1839,26 @@
                 "lumen",
                 "token"
             ],
-            "time": "2020-01-03T16:34:19+00:00"
+            "time": "2020-01-18T11:12:10+00:00"
         },
         {
             "name": "ionghitun/laravel-lumen-mysql-encryption",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ionghitun/laravel-lumen-mysql-encryption.git",
-                "reference": "1b95bc71038b0e29e492ee30c7da1b1452463757"
+                "reference": "57eb21aa277a8da008d6fd38ee1449b118df2811"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/1b95bc71038b0e29e492ee30c7da1b1452463757",
-                "reference": "1b95bc71038b0e29e492ee30c7da1b1452463757",
+                "url": "https://api.github.com/repos/ionghitun/laravel-lumen-mysql-encryption/zipball/57eb21aa277a8da008d6fd38ee1449b118df2811",
+                "reference": "57eb21aa277a8da008d6fd38ee1449b118df2811",
                 "shasum": ""
             },
             "require": {
                 "ext-openssl": "*",
                 "fzaninotto/faker": "^1.9",
-                "illuminate/database": ">=5.7",
+                "illuminate/database": ">=5.8",
                 "php": ">=7.2"
             },
             "require-dev": {
@@ -1899,7 +1899,7 @@
                 "lumen",
                 "mysql"
             ],
-            "time": "2020-01-08T07:30:20+00:00"
+            "time": "2020-01-18T11:15:32+00:00"
         },
         {
             "name": "laravel/lumen-framework",
@@ -5885,7 +5885,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2"
+        "php": "^7.2",
+        "ext-json": "*"
     },
     "platform-dev": []
 }

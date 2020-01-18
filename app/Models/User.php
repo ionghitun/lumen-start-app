@@ -19,7 +19,7 @@ use Laravel\Lumen\Auth\Authorizable;
  * @property string|null $name
  * @property string|null $email
  * @property string|null $password
- * @property string|null $picture
+ * @property array|null $picture
  * @property int $status
  * @property int $language_id
  * @property int $role_id

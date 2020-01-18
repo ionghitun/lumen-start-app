@@ -64,7 +64,7 @@ class TaskController extends Controller
                 $userTasks = $this->baseService->applySearch($userTasks, $request->get('search'));
             }
 
-            if ($request->has('filters')) {
+            if ($request->has('filters') && is_array($request->get('filters'))) {
                 $userTasks = $this->baseService->applyFilters($userTasks, $request->get('filters'));
             }
 
