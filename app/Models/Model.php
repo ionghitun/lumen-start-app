@@ -14,10 +14,16 @@ use IonGhitun\MysqlEncryption\Models\BaseModel;
 class Model extends BaseModel
 {
     /** @var array */
+    protected $visible = [];
+
+    /** @var array */
     protected $sortable = [];
 
     /** @var array */
     protected $searchable = [];
+
+    /** @var array */
+    protected $filterable = [];
 
     /**
      * Get sortable columns
@@ -35,6 +41,16 @@ class Model extends BaseModel
      * @return array
      */
     public function getSearchable()
+    {
+        return $this->searchable;
+    }
+
+    /**
+     * Get filterable columns
+     *
+     * @return array
+     */
+    public function getFilterable()
     {
         return $this->searchable;
     }

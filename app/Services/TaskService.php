@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\RolePermission;
 use App\Models\User;
 use App\Models\UserTask;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -16,13 +16,13 @@ use Illuminate\Support\Facades\Auth;
 class TaskService
 {
     /**
-     * Get logged user tasks.
+     * Get tasks builder.
      *
-     * @param Request $request
+     * @param int $canManage
      *
      * @return Builder
      */
-    public function getUserTasksBuilder(Request $request)
+    public function getUserTasksBuilder($canManage = 0)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -31,25 +31,13 @@ class TaskService
             $query->select(['id', 'name']);
         }, 'assignedUser' => function ($query) {
             $query->select(['id', 'name']);
-        }])->where(function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                ->orWhere('assigned_user_id', $user->id);
-        });
+        }]);
 
-        if ($request->has('search')) {
-            $search = $request->get('search');
-
-            if ($search !== '') {
-                $userTasks = $userTasks->where('description', 'LIKE', '%' . $search . '%');
-            }
-        }
-
-        if ($request->has('status')) {
-            $status = $request->get('status');
-
-            if (in_array($status, [UserTask::STATUS_ASSIGNED, UserTask::STATUS_COMPLETED])) {
-                $userTasks = $userTasks->where('status', $status);
-            }
+        if ($canManage === RolePermission::MANAGE_OWN) {
+            $userTasks = $userTasks->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('assigned_user_id', $user->id);
+            });
         }
 
         return $userTasks;

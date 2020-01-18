@@ -6,6 +6,7 @@ use App\Models\Language;
 use App\Models\RolePermission;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -22,12 +23,12 @@ class BaseService
     /**
      * Apply search
      *
-     * @param $builder
+     * @param Builder $builder
      * @param $term
      *
-     * @return mixed
+     * @return Builder
      */
-    public function applySearch($builder, $term)
+    public function applySearch(Builder $builder, $term)
     {
         $builder->where(function ($query) use ($term) {
             foreach ($query->getModel()->getSearchable() as $searchColumn) {
@@ -43,14 +44,37 @@ class BaseService
     }
 
     /**
+     * Apply filters
+     *
+     * @param Builder $builder
+     * @param array $filters
+     *
+     * @return Builder
+     */
+    public function applyFilters(Builder $builder, array $filters)
+    {
+        foreach ($filters as $filter => $value) {
+            if (in_array($filter, $builder->getModel()->getFiltrable())) {
+                if (in_array($filter, $builder->getModel()->getEncrypted())) {
+                    $builder->whereEncrypted($filter, $value);
+                } else {
+                    $builder->where($filter, $value);
+                }
+            }
+        }
+
+        return $builder;
+    }
+
+    /**
      * Apply sort params.
      *
      * @param Request $request
      * @param $builder
      *
-     * @return mixed
+     * @return Builder
      */
-    public function applySortParams(Request $request, $builder)
+    public function applySortParams(Request $request, Builder $builder)
     {
         if ($request->has('sortColumn') || $request->has('sortOrder')) {
             $sortColumn = strtolower($request->get('sortColumn', 'id'));
@@ -109,13 +133,13 @@ class BaseService
     /**
      * Get pagination data.
      *
-     * @param $builder
+     * @param Builder $builder
      * @param $page
      * @param $limit
      *
      * @return array
      */
-    public function getPaginationData($builder, $page, $limit)
+    public function getPaginationData(Builder $builder, $page, $limit)
     {
         $totalEntries = $builder->count();
 
@@ -141,6 +165,7 @@ class BaseService
     public function getLanguage(Request $request)
     {
         if ($request->has('language')) {
+            /** @var Language $language */
             $language = Language::where('code', strtolower($request->get('language')))->first();
 
             if ($language) {
@@ -152,6 +177,7 @@ class BaseService
         $user = Auth::user();
 
         if ($user) {
+            /** @var Language $language */
             $language = Language::where('id', $user->language_id)->first();
 
             if ($language) {
@@ -159,6 +185,7 @@ class BaseService
             }
         }
 
+        /** @var Language $language */
         $language = Language::where('code', env('APP_LOCALE'))->first();
 
         if ($language) {
@@ -178,7 +205,8 @@ class BaseService
      */
     public function getUserPermissionActions($userId, $permissionId)
     {
-        return $rolePermission = Cache::tags(['permissions'])
+        /** @var RolePermission $rolePermission */
+        $rolePermission = Cache::tags(['permissions'])
             ->remember(
                 'permission' . $userId . $permissionId,
                 env('CACHE_PERIOD'),
@@ -191,6 +219,8 @@ class BaseService
                         })->first();
                 }
             );
+
+        return $rolePermission;
     }
 
     /**

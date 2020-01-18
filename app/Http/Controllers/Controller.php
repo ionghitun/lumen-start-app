@@ -23,23 +23,29 @@ class Controller extends BaseController
     /** @var BaseService */
     protected $baseService;
 
-    /** @var null */
-    private $result = null;
-
-    /** @var null */
-    private $pagination = null;
-
-    /** @var null */
-    private $errorMessage = null;
-
     /** @var bool */
     private $isError = false;
 
-    /** @var bool */
-    private $userFault = true;
+    /** @var array */
+    private $errorMessage = [];
 
     /** @var bool */
-    private $refreshToken = true;
+    private $isForbidden = false;
+
+    /** @var array */
+    private $forbiddenMessage = [];
+
+    /** @var bool */
+    private $userFault = false;
+
+    /** @var null */
+    private $result = null;
+
+    /** @var array */
+    private $pagination = [];
+
+    /** @var bool */
+    private $refreshToken = false;
 
     /**
      * Controller constructor.
@@ -60,11 +66,15 @@ class Controller extends BaseController
      */
     protected function successResponse($data = null, $pagination = null, $refreshToken = null)
     {
-        $this->result = $data;
-        $this->pagination = $pagination;
-        $this->userFault = false;
+        if ($data !== null) {
+            $this->result = $data;
+        }
 
-        if (!is_null($refreshToken)) {
+        if ($pagination !== null) {
+            $this->pagination = $pagination;
+        }
+
+        if ($refreshToken !== null) {
             $this->refreshToken = $refreshToken;
         }
 
@@ -78,13 +88,30 @@ class Controller extends BaseController
      */
     private function buildResponse()
     {
-        $response = [
-            'isError' => $this->isError,
-            'userFault' => $this->userFault,
-            'errorMessage' => $this->errorMessage,
-            'result' => $this->result,
-            'pagination' => $this->pagination
-        ];
+        if ($this->isError) {
+            $response = [
+                'isError' => $this->isError,
+                'userFault' => $this->userFault,
+                'errorMessage' => $this->errorMessage
+            ];
+        } elseif ($this->isForbidden) {
+            $response = [
+                'isForbidden' => $this->isForbidden,
+                'forbiddenMessage' => $this->forbiddenMessage
+            ];
+        } else {
+            $response = [
+                'isError' => $this->isError
+            ];
+
+            if ($this->result !== null) {
+                $response['result'] = $this->result;
+            }
+
+            if (count($this->pagination) > 0) {
+                $response['pagination'] = $this->pagination;
+            }
+        }
 
         if ($this->refreshToken && Auth::check()) {
             /** @var User $user */
@@ -101,17 +128,18 @@ class Controller extends BaseController
     /**
      * Return user fault response.
      *
-     * @param $errorMessage
+     * @param array $errorMessage
      * @param bool|null $refreshToken
      *
      * @return JsonResponse
      */
-    protected function userErrorResponse($errorMessage, $refreshToken = null)
+    protected function userErrorResponse(array $errorMessage, $refreshToken = null)
     {
         $this->isError = true;
+        $this->userFault = true;
         $this->errorMessage = $errorMessage;
 
-        if (!is_null($refreshToken)) {
+        if ($refreshToken !== null) {
             $this->refreshToken = $refreshToken;
         }
 
@@ -125,14 +153,22 @@ class Controller extends BaseController
      */
     protected function errorResponse()
     {
-        $response = [
-            'isError' => true,
-            'userFault' => false,
-            'errorMessage' => ['application' => TranslationCode::ERROR_APPLICATION],
-            'result' => null,
-            'pagination' => null
-        ];
+        $this->isError = true;
+        $this->errorMessage = ['application' => TranslationCode::ERROR_APPLICATION];
 
-        return response()->json($response, Response::HTTP_OK);
+        return $this->buildResponse();
+    }
+
+    /**
+     * Return access forbidden response.
+     *
+     * @return JsonResponse
+     */
+    protected function forbiddenResponse()
+    {
+        $this->isForbidden = true;
+        $this->forbiddenMessage = ['forbidden' => TranslationCode::ERROR_FORBIDDEN];
+
+        return $this->buildResponse();
     }
 }

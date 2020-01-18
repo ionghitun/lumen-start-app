@@ -31,7 +31,6 @@ class CreateUsersTable extends Migration
             $table->string('forgot_code', 50)->nullable();
             $table->dateTime('forgot_time')->nullable();
             $table->text('facebook_id')->nullable();
-            $table->text('twitter_id')->nullable();
             $table->text('google_id')->nullable();
             $table->timestamps();
             $table->softDeletes();

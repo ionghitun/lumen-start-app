@@ -69,13 +69,9 @@ class Handler extends ExceptionHandler
         $response = [
             'isError' => true,
             'userFault' => false,
-            'errorMessage' => ['application' => TranslationCode::ERROR_APPLICATION],
-            'result' => null,
-            'pagination' => null
+            'errorMessage' => ['application' => TranslationCode::ERROR_APPLICATION]
         ];
 
-        $statusCode = Response::HTTP_OK;
-
-        return response()->json($response, $statusCode);
+        return response()->json($response, Response::HTTP_OK);
     }
 }

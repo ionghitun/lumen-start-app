@@ -53,6 +53,6 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT'),
             'database' => 0,
-        ],
+        ]
     ]
 ];

@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\DeleteExpiredTokensCommand;
+use App\Console\Commands\TaskNotificationsCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -18,8 +20,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\DeleteExpiredTokensCommand::class,
-        Commands\TaskNotificationsCommand::class
+        DeleteExpiredTokensCommand::class,
+        TaskNotificationsCommand::class
     ];
 
     /**

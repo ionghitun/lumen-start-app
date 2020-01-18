@@ -2,11 +2,25 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class UserTask
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $assigned_user_id
+ * @property string $description
+ * @property Carbon $deadline
+ * @property int $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ *
+ * @property-read User $user
+ * @property-read User $assignedUser
  *
  * @package App\Models
  */
@@ -50,6 +64,11 @@ class UserTask extends Model
     ];
 
     /** @var array */
+    protected $casts = [
+        'status' => 'int'
+    ];
+
+    /** @var array */
     protected $sortable = [
         'id',
         'description',
@@ -62,6 +81,12 @@ class UserTask extends Model
     /** @var array */
     protected $searchable = [
         'description'
+    ];
+
+    /** @var array */
+    protected $filterable = [
+        'user_id',
+        'status'
     ];
 
     /**
@@ -82,5 +107,15 @@ class UserTask extends Model
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_user_id', 'id');
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Carbon
+     */
+    public function getDeadlineAttribute($value)
+    {
+        return Carbon::parse($value);
     }
 }

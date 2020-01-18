@@ -33,16 +33,16 @@ $router->group(['middleware' => ['cors', 'auth']], function () use ($router) {
     /** Users routes */
     $router->post('/logout', ['uses' => 'LoginController@logout']);
     $router->group(['prefix' => 'user'], function () use ($router) {
-        $router->get('', ['uses' => 'UserController@getUser']);
-        $router->patch('', ['uses' => 'UserController@updateUser']);
-        $router->post('/picture', ['uses' => 'UserController@changeUserPicture']);
+        $router->get('', ['uses' => 'UserController@getLoggedUser']);
+        $router->patch('', ['uses' => 'UserController@updateLoggedUser']);
+        $router->post('/picture', ['uses' => 'UserController@changeLoggedUserPicture']);
     });
 
     /** Tasks routes */
-    $router->post('/tasks', ['uses' => 'TaskController@getUserTasks']);
+    $router->get('/tasks', ['uses' => 'TaskController@getUserTasks']);
     $router->group(['prefix' => 'task'], function () use ($router) {
         $router->post('/', ['uses' => 'TaskController@createTask']);
-        $router->group(['prefix' => '{$id}'], function () use ($router) {
+        $router->group(['prefix' => '{id}'], function () use ($router) {
             $router->get('', ['uses' => 'TaskController@getTask']);
             $router->patch('', ['uses' => 'TaskController@updateTask']);
             $router->delete('', ['uses' => 'TaskController@deleteTask']);

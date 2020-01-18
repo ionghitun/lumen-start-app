@@ -2,18 +2,31 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
  * Class RolePermission
  *
+ * @property int $id
+ * @property int $role_id
+ * @property int $permission_id
+ * @property int $read
+ * @property int $create
+ * @property int $update
+ * @property int $delete
+ * @property int $manage
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @property-read Role $role
+ * @property-read Permission $permission
+ *
  * @package App\Models
  */
-class RolePermission extends Model
+class RolePermission extends Pivot
 {
-    use SoftDeletes;
-
     /** @var int */
     const PERMISSION_FALSE = 0;
 
@@ -25,6 +38,9 @@ class RolePermission extends Model
 
     /** @var int */
     const MANAGE_ALL = 1;
+
+    /** @var bool */
+    public $incrementing = true;
 
     /** @var bool */
     public $timestamps = true;
@@ -46,8 +62,6 @@ class RolePermission extends Model
     /** @var array */
     protected $visible = [
         'id',
-        'role_id',
-        'permission_id',
         'read',
         'create',
         'update',
@@ -58,12 +72,19 @@ class RolePermission extends Model
     ];
 
     /** @var array */
-    protected $sortable = [
-        'id'
+    protected $hidden = [
+        'role_id',
+        'permission_id'
     ];
 
     /** @var array */
-    protected $searchable = [];
+    protected $casts = [
+        'read' => 'int',
+        'create' => 'int',
+        'update' => 'int',
+        'delete' => 'int',
+        'manage' => 'int',
+    ];
 
     /**
      * Role.

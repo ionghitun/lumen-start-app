@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,6 +14,30 @@ use Laravel\Lumen\Auth\Authorizable;
 
 /**
  * Class User
+ *
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $email
+ * @property string|null $password
+ * @property string|null $picture
+ * @property int $status
+ * @property int $language_id
+ * @property int $role_id
+ * @property string|null $activation_code
+ * @property string|null $forgot_code
+ * @property Carbon|null $forgot_time
+ * @property string|null $facebook_id
+ * @property string|null $google_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ *
+ * @property-read Collection|UserToken[] $userTokens
+ * @property-read Collection|UserNotification[] $userNotifications
+ * @property-read Language $language
+ * @property-read Role $role
+ * @property-read Collection|UserTask[] $userTasks
+ * @property-read Collection|UserTask[] $userAssignedTasks
  *
  * @package App\Models
  */
@@ -47,7 +73,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'forgot_code',
         'forgot_time',
         'facebook_id',
-        'twitter_id',
         'google_id'
     ];
 
@@ -58,7 +83,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'forgot_code',
         'forgot_time',
         'facebook_id',
-        'twitter_id',
         'google_id'
     ];
 
@@ -81,6 +105,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /** @var array */
+    protected $casts = [
+        'status' => 'int'
+    ];
+
+    /** @var array */
     protected $sortable = [
         'id',
         'name',
@@ -100,6 +129,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $encrypted = [
         'name',
         'email'
+    ];
+
+    /** @var array */
+    protected $filterable = [
+        'status',
+        'language_id',
+        'role_id'
     ];
 
     /**
@@ -160,5 +196,33 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function userAssignedTasks()
     {
         return $this->hasMany(UserTask::class, 'assigned_user_id', 'id');
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Carbon|null
+     */
+    public function getForgotTimeAttribute($value)
+    {
+        if ($value !== null) {
+            return Carbon::parse($value);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return array|null
+     */
+    public function getPictureAttribute($value)
+    {
+        if ($value !== null && $value !== '') {
+            return json_decode($value, true);
+        }
+
+        return null;
     }
 }

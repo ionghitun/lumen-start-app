@@ -7,7 +7,6 @@ use App\Services\LogService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -57,13 +56,12 @@ class DeleteExpiredTokensCommand extends Command
      */
     private function removeExpiredTokens()
     {
-        /** @var Collection $userTokens */
+        /** @var UserToken[] $userTokens */
         $userTokens = UserToken::where('expire_on', '<=', Carbon::now()->format('Y-m-d H:i:s'))
             ->get();
 
         $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Found ' . $userTokens->count() . ' tokens to be removed.');
 
-        /** @var UserToken $userToken */
         foreach ($userTokens as $userToken) {
             $userToken->delete();
         }

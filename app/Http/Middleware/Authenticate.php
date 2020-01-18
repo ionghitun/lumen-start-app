@@ -47,14 +47,10 @@ class Authenticate
             $response = [
                 'isError' => true,
                 'userFault' => true,
-                'errorMessage' => ['authorization' => TranslationCode::ERROR_UNAUTHORIZED],
-                'result' => null,
-                'pagination' => null
+                'errorMessage' => ['authorization' => TranslationCode::ERROR_UNAUTHORIZED]
             ];
 
-            $statusCode = Response::HTTP_UNAUTHORIZED;
-
-            return response()->json($response, $statusCode);
+            return response()->json($response, Response::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);

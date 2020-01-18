@@ -2,10 +2,21 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class UserToken
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $token
+ * @property int $type
+ * @property Carbon|null $expire_on
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @property-read User $user
  *
  * @package App\Models
  */
@@ -29,10 +40,9 @@ class UserToken extends Model
     ];
 
     /** @var array */
-    protected $visible = [];
-
-    /** @var array */
-    protected $sortable = [];
+    protected $casts = [
+        'type' => 'int'
+    ];
 
     /**
      * User.
@@ -42,5 +52,19 @@ class UserToken extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * @param $value
+     *
+     * @return Carbon
+     */
+    public function getExpireOnAttribute($value)
+    {
+        if ($value !== null) {
+            return Carbon::parse($value);
+        }
+
+        return null;
     }
 }

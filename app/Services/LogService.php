@@ -31,7 +31,7 @@ class LogService
         $errorString .= '#01 User: ' . ($user ? $user->id . ' --- ' . $user->name : '') . "\n";
 
         if ($request) {
-            $errorString .= '#02 Request: ' . json_encode($request->all()) . "\n";
+            $errorString .= '#02 Request: ' . json_encode($request->all(), JSON_UNESCAPED_UNICODE) . "\n";
         }
 
         $count = 0;

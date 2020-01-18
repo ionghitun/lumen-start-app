@@ -12,6 +12,8 @@ class TranslationCode
     /* Misc */
     const ERROR_APPLICATION = 'errors.application';
     const ERROR_UNAUTHORIZED = 'error.unauthorized';
+    const ERROR_FORBIDDEN = 'error.forbidden';
+    const ERROR_NOT_FOUND = 'error.notFound';
 
     /* Register */
     const ERROR_REGISTER_NAME_REQUIRED = 'errors.registerName.required';

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Support\ServiceProvider;
 use IonGhitun\JwtToken\Jwt;
@@ -34,7 +35,12 @@ class AuthServiceProvider extends ServiceProvider
                     try {
                         $userPayload = Jwt::validateToken($requestToken[1]);
 
-                        return User::where('id', $userPayload['id'])->first();
+                        $userBuilder = UserService::getUserBuilderForLogin();
+
+                        /** @var User|null $user */
+                        $user = $userBuilder->where('id', $userPayload['id'])->first();
+
+                        return $user;
                     } catch (Exception $e) {
                         return null;
                     }

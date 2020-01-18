@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\TranslationCode;
+use App\Models\Permission;
+use App\Models\RolePermission;
+use App\Models\User;
 use App\Models\UserTask;
 use App\Services\LogService;
 use App\Services\TaskService;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -40,10 +47,25 @@ class TaskController extends Controller
     public function getUserTasks(Request $request)
     {
         try {
-            $userTasks = $this->taskService->getUserTasksBuilder($request);
+            /** @var User $user */
+            $user = Auth::user();
+
+            /** @var RolePermission $userRolePermission */
+            $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
+
+            if ($userRolePermission->read !== RolePermission::PERMISSION_TRUE) {
+                return $this->forbiddenResponse();
+            }
+
+            /** @var Builder $userTasks */
+            $userTasks = $this->taskService->getUserTasksBuilder($userRolePermission->manage);
 
             if ($request->has('search')) {
                 $userTasks = $this->baseService->applySearch($userTasks, $request->get('search'));
+            }
+
+            if ($request->has('filters')) {
+                $userTasks = $this->baseService->applyFilters($userTasks, $request->get('filters'));
             }
 
             $userTasks = $this->baseService->applySortParams($request, $userTasks);
@@ -52,6 +74,7 @@ class TaskController extends Controller
 
             $pagination = $this->baseService->getPaginationData($userTasks, $paginationParams['page'], $paginationParams['limit']);
 
+            /** @var UserTask[] $userTasks */
             $userTasks = $userTasks->offset($paginationParams['offset'])->limit($paginationParams['limit'])->get();
 
             return $this->successResponse($userTasks, $pagination);
@@ -65,12 +88,15 @@ class TaskController extends Controller
     /**
      * Create a task
      *
+     * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function createTask()
+    public function createTask(Request $request)
     {
         try {
             //TODO
+
             return $this->successResponse();
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
@@ -89,7 +115,12 @@ class TaskController extends Controller
     public function getTask($id)
     {
         try {
+            /** @var UserTask|null $userTask */
             $userTask = UserTask::find($id);
+
+            if (!$userTask) {
+                return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
+            }
 
             return $this->successResponse($userTask);
         } catch (Exception $e) {
@@ -103,13 +134,19 @@ class TaskController extends Controller
      * Update a task
      *
      * @param $id
+     * @param Request $request
      *
      * @return JsonResponse
      */
-    public function updateTask($id)
+    public function updateTask($id, Request $request)
     {
         try {
+            /** @var UserTask|null $userTask */
             $userTask = UserTask::find($id);
+
+            if (!$userTask) {
+                return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
+            }
 
             //TODO
 
@@ -131,13 +168,18 @@ class TaskController extends Controller
     public function deleteTask($id)
     {
         try {
+            /** @var UserTask|null $userTask */
             $userTask = UserTask::find($id);
 
-            //TODO
-
-            if ($userTask) {
-                $userTask->delete();
+            if (!$userTask) {
+                return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
             }
+
+            DB::beginTransaction();
+
+            $userTask->delete();
+
+            DB::commit();
 
             return $this->successResponse();
         } catch (Exception $e) {

@@ -48,7 +48,7 @@ class UserController extends Controller
             $validator = $this->userService->validateRegisterRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             $request->merge(['password' => Hash::make($request->get('password'))]);
@@ -80,9 +80,10 @@ class UserController extends Controller
             $validator = $this->userService->validateForgotPasswordRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
+            /** @var User $user */
             $user = User::whereEncrypted('email', $request->get('email'))->first();
 
             if ($user->status === User::STATUS_UNCONFIRMED) {
@@ -120,7 +121,7 @@ class UserController extends Controller
             $validator = $this->userService->validateChangePasswordRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             /** @var User|null $user */
@@ -132,7 +133,7 @@ class UserController extends Controller
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_CODE_INVALID]);
             }
 
-            if (Carbon::parse($user->forgot_time)->addHour() < Carbon::now()) {
+            if ($user->forgot_time->addHour() < Carbon::now()) {
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_PASSED_1H]);
             }
 
@@ -163,7 +164,7 @@ class UserController extends Controller
             $validator = $this->userService->validateActivateAccountOrChangeEmailRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             DB::beginTransaction();
@@ -197,7 +198,7 @@ class UserController extends Controller
             $validator = $this->userService->validateResendActivationCodeRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             DB::beginTransaction();
@@ -223,7 +224,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function getUser()
+    public function getLoggedUser()
     {
         try {
             return $this->successResponse(Auth::user());
@@ -242,7 +243,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function updateUser(Request $request)
+    public function updateLoggedUser(Request $request)
     {
         try {
             /** @var User $user */
@@ -251,7 +252,7 @@ class UserController extends Controller
             $validator = $this->userService->validateUpdateUserRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             $email = $request->get('email');
@@ -290,22 +291,25 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function changeUserPicture(Request $request)
+    public function changeLoggedUserPicture(Request $request)
     {
         try {
+            /** @var User $user */
+            $user = Auth::user();
+
             $validator = $this->userService->validateUpdateUserPictureRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             DB::beginTransaction();
 
-            $this->userService->updateLoggedUserPicture($request->file('picture'));
+            $this->userService->updateLoggedUserPicture($user, $request->file('picture'));
 
             DB::commit();
 
-            return $this->successResponse();
+            return $this->successResponse($user);
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e, $request));
 

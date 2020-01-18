@@ -9,7 +9,6 @@ use App\Services\NotificationService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -72,7 +71,7 @@ class TaskNotificationsCommand extends Command
      */
     private function checkExpiringTasks()
     {
-        /** @var Collection $expiringUserTasks */
+        /** @var UserTask[] $expiringUserTasks */
         $expiringUserTasks = UserTask::where('status', UserTask::STATUS_ASSIGNED)
             ->where('deadline', Carbon::now()->format('Y-m-d'))
             ->get();
@@ -96,7 +95,7 @@ class TaskNotificationsCommand extends Command
      */
     private function checkExpiredTasks()
     {
-        /** @var Collection $expiredUserTasks */
+        /** @var UserTask[] $expiringUserTasks */
         $expiredUserTasks = UserTask::where('status', UserTask::STATUS_ASSIGNED)
             ->where('deadline', Carbon::now()->subDay()->format('Y-m-d'))
             ->get();

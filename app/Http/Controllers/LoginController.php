@@ -8,6 +8,7 @@ use App\Models\UserToken;
 use App\Services\LogService;
 use App\Services\UserService;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,9 +50,10 @@ class LoginController extends Controller
             $validator = $this->userService->validateLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
+            /** @var User|null $user */
             $user = $this->userService->loginUser($request->only('email', 'password'));
 
             if (!$user) {
@@ -85,11 +87,12 @@ class LoginController extends Controller
             $validator = $this->userService->validateTokenLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             $rememberToken = $request->get('rememberToken');
 
+            /** @var User|null $user */
             $user = $this->userService->loginUserWithRememberToken($rememberToken);
 
             if (!$user) {
@@ -129,7 +132,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateFacebookLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             $token = $request->get('accessToken');
@@ -151,6 +154,7 @@ class LoginController extends Controller
 
             DB::beginTransaction();
 
+            /** @var User|null $user */
             $user = $this->userService->loginUserWithSocial($facebookUser, $this->baseService->getLanguage($request), 'facebook_id');
 
             $loginData = $this->userService->generateLoginData($user);
@@ -178,7 +182,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateGoogleLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages());
+                return $this->userErrorResponse($validator->messages()->all());
             }
 
             $token = $request->get('accessToken');
@@ -200,6 +204,7 @@ class LoginController extends Controller
 
             DB::beginTransaction();
 
+            /** @var User|null $user */
             $user = $this->userService->loginUserWithSocial($googleUser, $this->baseService->getLanguage($request), 'google_id');
 
             $loginData = $this->userService->generateLoginData($user);
@@ -227,13 +232,18 @@ class LoginController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
-            if ($request->has('rememberToken')) {
+            if ($request->has('rememberToken') || $request->has('everywhere')) {
                 DB::beginTransaction();
 
-                UserToken::where('token', $request->get('rememberToken'))
-                    ->where('user_id', $user->id)
-                    ->where('type', UserToken::TYPE_REMEMBER_ME)
-                    ->delete();
+                /** @var Builder $userTokens */
+                $userTokens = UserToken::where('user_id', $user->id)
+                    ->where('type', UserToken::TYPE_REMEMBER_ME);
+
+                if ($request->has('rememberToken')) {
+                    $userTokens = $userTokens->where('token', $request->get('rememberToken'));
+                }
+
+                $userTokens->delete();
 
                 DB::commit();
             }

@@ -9,13 +9,13 @@ use App\Models\User;
 use App\Models\UserToken;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator as ReturnedValidator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use IonGhitun\JwtToken\Exceptions\JwtException;
 use IonGhitun\JwtToken\Jwt;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
@@ -79,7 +79,7 @@ class UserService
      */
     public function loginUser(array $credentials)
     {
-        $builder = $this->getUserBuilderForLogin();
+        $builder = self::getUserBuilderForLogin();
 
         /** @var User|null $user */
         $user = $builder->whereEncrypted('email', $credentials['email'])
@@ -101,19 +101,17 @@ class UserService
     /**
      * Get user builder for login
      *
-     * @return mixed
+     * @return Builder
      */
-    private function getUserBuilderForLogin()
+    public static function getUserBuilderForLogin()
     {
-        return User::with(['role' => function ($query) {
+        /** @var  Builder $userBuilder */
+        $userBuilder = User::with(['role' => function ($query) {
             $query->select(['id', 'name'])
-                ->with(['rolePermissions' => function ($query) {
-                    $query->select(['role_id', 'permission_id', 'read', 'create', 'update', 'delete', 'manage'])
-                        ->with(['permission' => function ($query) {
-                            $query->select(['id', 'name']);
-                        }]);
-                }]);
+                ->with(['permissions']);
         }]);
+
+        return $userBuilder;
     }
 
     /**
@@ -123,8 +121,6 @@ class UserService
      * @param bool $remember
      *
      * @return array
-     *
-     * @throws JwtException
      */
     public function generateLoginData(User $user, $remember = false)
     {
@@ -173,22 +169,26 @@ class UserService
      */
     public function loginUserWithRememberToken($token)
     {
-        $builder = $this->getUserBuilderForLogin();
+        $builder = self::getUserBuilderForLogin();
 
-        return $builder->whereHas('userTokens', function ($query) use ($token) {
+        /** @var User|null $user */
+        $user = $builder->whereHas('userTokens', function ($query) use ($token) {
             $query->where('token', $token)
                 ->where('expire_on', '>=', Carbon::now()->format('Y-m-d H:i:s'));
         })->first();
+
+        return $user;
     }
 
     /**
-     * Update remember token valability when used on login
+     * Update remember token validity when used on login
      *
      * @param $token
      * @param int $days
      */
     public function updateRememberTokenValability($token, $days = 14)
     {
+        /** @var UserToken $userToken */
         $userToken = UserToken::where('token', $token)
             ->where('type', UserToken::TYPE_REMEMBER_ME)
             ->first();
@@ -255,7 +255,7 @@ class UserService
      */
     public function loginUserWithSocial(SocialiteUser $socialUser, Language $language, string $socialId)
     {
-        $builder = $this->getUserBuilderForLogin();
+        $builder = self::getUserBuilderForLogin();
 
         /** @var User|null $user */
         $user = $builder->where(function ($query) use ($socialUser, $socialId) {
@@ -334,8 +334,9 @@ class UserService
         $rules = [
             'name' => 'required|alpha_spaces',
             'email' => 'required|email',
-            'newPassword' => 'required_with:oldPassword|min:6',
-            'language' => 'required|exists:languages,id'
+            'oldPassword' => 'required_with:newPassword',
+            'newPassword' => 'nullable|min:6',
+            'language' => 'required|exists:languages,code'
         ];
 
         $messages = [
@@ -343,7 +344,7 @@ class UserService
             'name.alpha_spaces' => TranslationCode::ERROR_UPDATE_NAME_ALPHA_SPACES,
             'email.required' => TranslationCode::ERROR_UPDATE_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_UPDATE_EMAIL_INVALID,
-            'newPassword.required_with' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
+            'oldPassword.required_with' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
             'newPassword.min' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN6,
             'language.required' => TranslationCode::ERROR_UPDATE_LANGUAGE_REQUIRED,
             'language.exists' => TranslationCode::ERROR_UPDATE_LANGUAGE_EXISTS,
@@ -413,9 +414,10 @@ class UserService
     /**
      * Change logged user picture
      *
+     * @param $user
      * @param $picture
      */
-    public function updateLoggedUserPicture($picture)
+    public function updateLoggedUserPicture(&$user, $picture)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -431,10 +433,8 @@ class UserService
         $pictureData = $baseService->processImage($path, $picture, $generatedPictureName, true);
 
         if ($pictureData) {
-            if ($user->picture !== '') {
-                $oldPictureData = json_decode($user->picture, true);
-
-                foreach ($oldPictureData as $oldPicture) {
+            if ($user->picture) {
+                foreach ($user->picture as $oldPicture) {
                     if ($oldPicture && file_exists($oldPicture)) {
                         unlink($oldPicture);
                     }
@@ -518,10 +518,10 @@ class UserService
     /**
      * Update user password after reset
      *
-     * @param $user
+     * @param User $user
      * @param $password
      */
-    public function updatePassword($user, $password)
+    public function updatePassword(User $user, $password)
     {
         $user->forgot_code = null;
         $user->forgot_time = null;
@@ -636,6 +636,7 @@ class UserService
      */
     public function resendRegisterMail(Request $request)
     {
+        /** @var User|null $user */
         $user = User::whereEncrypted('email', $request->get('email'))->first();
 
         if (!$user) {

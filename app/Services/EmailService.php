@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Jobs\SendMailJob;
+use App\Mail\SendMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 
 /**
  * Class EmailService
@@ -23,12 +25,17 @@ class EmailService
     {
         Lang::setLocale($languageCode);
 
-        Mail::send('emails.forgot', ['user' => $user], function ($message) use ($user) {
-            $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-            $message->subject(Lang::get('forgot.subject'));
+        $sendMail = new SendMail(
+            $user->email,
+            Lang::get('forgot.subject'),
+            'emails.forgot',
+            [
+                'name' => $user->name,
+                'forgot_code' => $user->forgot_code
+            ]
+        );
 
-            $message->to($user->email);
-        });
+        Queue::push(new SendMailJob($sendMail));
     }
 
     /**
@@ -41,13 +48,17 @@ class EmailService
     {
         Lang::setLocale($languageCode);
 
-        Mail::send('emails.activation', ['user' => $user],
-            function ($message) use ($user) {
-                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                $message->subject(Lang::get('activate.subject'));
+        $sendMail = new SendMail(
+            $user->email,
+            Lang::get('activate.subject'),
+            'emails.activation',
+            [
+                'name' => $user->name,
+                'activation_code' => $user->activation_code
+            ]
+        );
 
-                $message->to($user->email);
-            });
+        Queue::push(new SendMailJob($sendMail));
     }
 
     /**
@@ -60,12 +71,16 @@ class EmailService
     {
         Lang::setLocale($languageCode);
 
-        Mail::send('emails.emailChange', ['user' => $user],
-            function ($message) use ($user) {
-                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                $message->subject(Lang::get('emailChange.subject'));
+        $sendMail = new SendMail(
+            $user->email,
+            Lang::get('emailChange.subject'),
+            'emails.emailChange',
+            [
+                'name' => $user->name,
+                'activation_code' => $user->activation_code
+            ]
+        );
 
-                $message->to($user->email);
-            });
+        Queue::push(new SendMailJob($sendMail));
     }
 }

@@ -84,13 +84,16 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Illuminate\Mail\MailServiceProvider::class);
 $app->register(Intervention\Image\ImageServiceProviderLumen::class);
 $app->register(Laravel\Socialite\SocialiteServiceProvider::class);
+$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
 $app->register(IonGhitun\MysqlEncryption\MysqlEncryptionServiceProvider::class);
 
-$app->configure('database');
-$app->configure('mail');
-$app->configure('services');
-$app->configure('image');
 $app->configure('broadcasting');
+$app->configure('database');
+$app->configure('filesystems');
+$app->configure('image');
+$app->configure('mail');
+$app->configure('queue');
+$app->configure('services');
 
 /*
 |--------------------------------------------------------------------------
