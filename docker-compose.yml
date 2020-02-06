@@ -13,8 +13,6 @@ services:
     depends_on:
       - lumen-mysql
       - lumen-redis
-    environment:
-      XDEBUG_CONFIG: 'remote_host=10.0.75.1'
     networks:
       - lumen
 
@@ -60,6 +58,8 @@ services:
       dockerfile: docker/redis/Dockerfile
       args:
         REDIS_PASSWORD: ${REDIS_PASSWORD}
+    sysctls:
+      - net.core.somaxconn=511
     ports:
       - 63795:6379
     restart: unless-stopped

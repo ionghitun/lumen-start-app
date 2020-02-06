@@ -33,7 +33,7 @@ The project is docker ready via docker-compose, `.env.example` contains default 
 7. User login with possibility to be remembered, login generates a JWT token using https://github.com/ionghitun/jwt-token.
 8. Login with social: facebook, google.
 9. Forgot password (user will receive an email with code and will have to use that code to change password).
-10. Update user profile with change email (a confirmation code with be sen on email).
+10. Update user profile with change email (a confirmation code with be send on email).
 11. Change user picture.
 12. Notifications with emitting event (broadcast).
 13. Started CRUD example (users tasks).

@@ -17,10 +17,9 @@ RUN docker-php-ext-install pdo_mysql zip gd exif intl
 
 RUN pecl install imagick
 
-RUN pecl install xdebug
+RUN docker-php-ext-install pcntl
 
 ADD ./docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
-ADD ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 ADD ./docker/php/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
 

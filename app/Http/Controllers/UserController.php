@@ -48,7 +48,7 @@ class UserController extends Controller
             $validator = $this->userService->validateRegisterRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             $request->merge(['password' => Hash::make($request->get('password'))]);
@@ -80,7 +80,7 @@ class UserController extends Controller
             $validator = $this->userService->validateForgotPasswordRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             /** @var User $user */
@@ -121,7 +121,7 @@ class UserController extends Controller
             $validator = $this->userService->validateChangePasswordRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             /** @var User|null $user */
@@ -164,7 +164,7 @@ class UserController extends Controller
             $validator = $this->userService->validateActivateAccountOrChangeEmailRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             DB::beginTransaction();
@@ -198,7 +198,7 @@ class UserController extends Controller
             $validator = $this->userService->validateResendActivationCodeRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             DB::beginTransaction();
@@ -252,7 +252,7 @@ class UserController extends Controller
             $validator = $this->userService->validateUpdateUserRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             $email = $request->get('email');
@@ -300,7 +300,7 @@ class UserController extends Controller
             $validator = $this->userService->validateUpdateUserPictureRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             DB::beginTransaction();

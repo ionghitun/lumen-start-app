@@ -50,7 +50,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             /** @var User|null $user */
@@ -87,7 +87,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateTokenLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             $rememberToken = $request->get('rememberToken');
@@ -132,7 +132,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateFacebookLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             $token = $request->get('accessToken');
@@ -182,7 +182,7 @@ class LoginController extends Controller
             $validator = $this->userService->validateGoogleLoginRequest($request);
 
             if (!$validator->passes()) {
-                return $this->userErrorResponse($validator->messages()->all());
+                return $this->userErrorResponse($validator->messages()->toArray());
             }
 
             $token = $request->get('accessToken');

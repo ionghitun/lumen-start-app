@@ -20,8 +20,8 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
-        "illuminate/mail": "^6.11",
-        "illuminate/redis": "^6.11",
+        "illuminate/mail": "^6.14",
+        "illuminate/redis": "^6.14",
         "intervention/image": "^2.5",
         "ionghitun/jwt-token": "^1.2",
         "ionghitun/laravel-lumen-mysql-encryption": "^1.4",
