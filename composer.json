@@ -18,7 +18,7 @@
     "homepage": "https://github.com/ionghitun/lumen-start-app",
     "type": "project",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-intl": "*",
         "ext-json": "*",
         "illuminate/mail": "^7.4",

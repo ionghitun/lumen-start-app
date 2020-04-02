@@ -14,7 +14,7 @@ Boilerplate for laravel/lumen framework https://github.com/laravel/lumen.
 
 ## Dependencies
 
-- php >= 7.2
+- php >= 7.3
 
 ## Documentation
 
