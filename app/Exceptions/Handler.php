@@ -9,11 +9,12 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 /**
  * Class Handler
@@ -39,11 +40,11 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param Exception $exception
+     * @param Throwable $exception
      *
      * @throws Exception
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -54,15 +55,19 @@ class Handler extends ExceptionHandler
      * When in production we return same json structure even when error occurred.
      *
      * @param Request $request
-     * @param Exception $exception
+     * @param Throwable $exception
      *
      * @return JsonResponse|Response
+     *
+     * @throws Throwable
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         if (env('APP_DEBUG')) {
             return parent::render($request, $exception);
         }
+
+        $exception = new Exception($exception->getMessage(), $exception->getCode(), $exception);
 
         Log::error(LogService::getExceptionTraceAsString($exception, $request));
 

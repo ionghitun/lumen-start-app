@@ -3,7 +3,6 @@
 use App\Models\Language;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\RolePermission;
 use App\Models\User;
 use App\Models\UserNotification;
 use App\Models\UserTask;
