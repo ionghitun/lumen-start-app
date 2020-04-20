@@ -34,8 +34,8 @@ use Laravel\Lumen\Auth\Authorizable;
  *
  * @property-read Collection|UserToken[] $userTokens
  * @property-read Collection|UserNotification[] $userNotifications
- * @property-read Language $language
- * @property-read Role $role
+ * @property Language $language
+ * @property Role $role
  * @property-read Collection|UserTask[] $userTasks
  * @property-read Collection|UserTask[] $userAssignedTasks
  *

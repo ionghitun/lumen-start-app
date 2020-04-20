@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @property-read User $user
+ * @property User $user
  *
  * @package App\Models
  */

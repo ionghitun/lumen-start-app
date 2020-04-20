@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  *
- * @property-read User $user
- * @property-read User $assignedUser
+ * @property User $user
+ * @property User $assignedUser
  *
  * @package App\Models
  */

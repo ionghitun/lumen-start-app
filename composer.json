@@ -21,19 +21,21 @@
         "php": "^7.3",
         "ext-intl": "*",
         "ext-json": "*",
-        "illuminate/mail": "^7.4",
-        "illuminate/redis": "^7.4",
+        "illuminate/mail": "^7.0",
+        "illuminate/redis": "^7.0",
         "intervention/image": "^2.5",
-        "ionghitun/jwt-token": "^1.2",
-        "ionghitun/laravel-lumen-mysql-encryption": "^1.4",
+        "ionghitun/jwt-token": "^2.0",
+        "ionghitun/laravel-lumen-mysql-encryption": "^2.0",
         "laravel/lumen-framework": "^7.0",
         "laravel/socialite": "^4.3",
         "predis/predis": "^1.1"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.6",
         "fzaninotto/faker": "^1.9",
+        "league/flysystem": "^1.0",
         "mockery/mockery": "^1.3",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.1"
     },
     "minimum-stability": "stable",
     "autoload": {

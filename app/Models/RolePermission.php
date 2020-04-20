@@ -20,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @property-read Role $role
- * @property-read Permission $permission
+ * @property Role $role
+ * @property Permission $permission
  *
  * @package App\Models
  */

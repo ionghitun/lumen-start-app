@@ -1,5 +1,7 @@
 #ide
 .idea
+.phpstorm.meta.php
+_ide_helper.php
 
 #misc
 .env

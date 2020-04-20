@@ -1,5 +1,26 @@
 version: '3'
 services:
+  lumen-nginx:
+    container_name: lumen-nginx
+    build:
+      context: ./
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - 80
+    restart: unless-stopped
+    depends_on:
+      - lumen-php
+    environment:
+      VIRTUAL_HOST: lumen.local
+      VIRTUAL_PORT: 80
+      LETSENCRYPT_HOST: lumen.local
+      LETSENCRYPT_EMAIL: lumen@lumen.local
+    networks:
+      - lumen
+      - nginx-proxy
+
   lumen-php:
     container_name: lumen-php
     build:
@@ -16,24 +37,6 @@ services:
     networks:
       - lumen
 
-  lumen-nginx:
-    container_name: lumen-nginx
-    build:
-      context: ./
-      dockerfile: docker/nginx/Dockerfile
-    volumes:
-      - ./:/var/www
-    ports:
-      - 80
-    restart: unless-stopped
-    depends_on:
-      - lumen-php
-    environment:
-      VIRTUAL_HOST: 'lumen.local.ro'
-    networks:
-      - lumen
-      - nginx-proxy
-
   lumen-mysql:
     container_name: lumen-mysql
     build:
@@ -42,7 +45,7 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     ports:
-      - 33065:3306
+      - 33060:3306
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -61,7 +64,7 @@ services:
     sysctls:
       - net.core.somaxconn=511
     ports:
-      - 63795:6379
+      - 63790:6379
     restart: unless-stopped
     networks:
       - lumen
