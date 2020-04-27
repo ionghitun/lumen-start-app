@@ -304,19 +304,23 @@ class UserService
     public function validateRegisterRequest(Request $request)
     {
         $rules = [
-            'name' => 'required|alpha_spaces',
+            'name' => 'required|name',
             'email' => 'required|email|unique_encrypted:users,email',
-            'password' => 'required|min:6'
+            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'retypePassword' => 'required|same:password'
         ];
 
         $messages = [
             'name.required' => TranslationCode::ERROR_REGISTER_NAME_REQUIRED,
-            'name.alpha_spaces' => TranslationCode::ERROR_REGISTER_NAME_ALPHA_SPACES,
+            'name.name' => TranslationCode::ERROR_REGISTER_NAME_NAME,
             'email.required' => TranslationCode::ERROR_REGISTER_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_REGISTER_EMAIL_INVALID,
             'email.unique_encrypted' => TranslationCode::ERROR_REGISTER_EMAIL_REGISTERED,
             'password.required' => TranslationCode::ERROR_REGISTER_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_REGISTER_PASSWORD_MIN6
+            'password.min' => TranslationCode::ERROR_REGISTER_PASSWORD_MIN8,
+            'password.regex' => TranslationCode::ERROR_REGISTER_PASSWORD_COMPLEXITY,
+            'retypePassword.required' => TranslationCode::ERROR_REGISTER_RETYPE_PASSWORD_REQUIRED,
+            'retypePassword.same' => TranslationCode::ERROR_REGISTER_RETYPE_PASSWORD_SAME
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -332,20 +336,24 @@ class UserService
     public function validateUpdateUserRequest(Request $request)
     {
         $rules = [
-            'name' => 'required|alpha_spaces',
+            'name' => 'required|name',
             'email' => 'required|email',
             'oldPassword' => 'required_with:newPassword',
-            'newPassword' => 'nullable|min:6',
+            'newPassword' => 'nullable|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'retypePassword' => 'required_with:newPassword|same:newPassword',
             'language' => 'required|exists:languages,code'
         ];
 
         $messages = [
             'name.required' => TranslationCode::ERROR_UPDATE_NAME_REQUIRED,
-            'name.alpha_spaces' => TranslationCode::ERROR_UPDATE_NAME_ALPHA_SPACES,
+            'name.name' => TranslationCode::ERROR_UPDATE_NAME_NAME,
             'email.required' => TranslationCode::ERROR_UPDATE_EMAIL_REQUIRED,
             'email.email' => TranslationCode::ERROR_UPDATE_EMAIL_INVALID,
             'oldPassword.required_with' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
-            'newPassword.min' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN6,
+            'newPassword.min' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN8,
+            'newPassword.regex' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_COMPLEXITY,
+            'retypePassword.required_with' => TranslationCode::ERROR_UPDATE_RETYPE_PASSWORD_REQUIRED,
+            'retypePassword.same' => TranslationCode::ERROR_UPDATE_RETYPE_PASSWORD_SAME,
             'language.required' => TranslationCode::ERROR_UPDATE_LANGUAGE_REQUIRED,
             'language.exists' => TranslationCode::ERROR_UPDATE_LANGUAGE_EXISTS,
         ];
@@ -500,7 +508,8 @@ class UserService
         $rules = [
             'email' => 'required|email|exists_encrypted:users,email',
             'code' => 'required',
-            'password' => 'required|min:6'
+            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'retypePassword' => 'required|same:password'
         ];
 
         $messages = [
@@ -509,7 +518,10 @@ class UserService
             'email.exists_encrypted' => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED,
             'code.required' => TranslationCode::ERROR_FORGOT_CODE_REQUIRED,
             'password.required' => TranslationCode::ERROR_FORGOT_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_FORGOT_PASSWORD_MIN6
+            'password.min' => TranslationCode::ERROR_FORGOT_PASSWORD_MIN8,
+            'password.regex' => TranslationCode::ERROR_FORGOT_PASSWORD_COMPLEXITY,
+            'retypePassword.required' => TranslationCode::ERROR_FORGOT_RETYPE_PASSWORD_REQUIRED,
+            'retypePassword.same' => TranslationCode::ERROR_FORGOT_RETYPE_PASSWORD_SAME
         ];
 
         return Validator::make($request->all(), $rules, $messages);

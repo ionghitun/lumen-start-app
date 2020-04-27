@@ -169,6 +169,13 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
+            /** @var User|null $user */
+            $user = User::whereEncrypted('email', $request->get('email'))->first();
+
+            if ($user->status === User::STATUS_CONFIRMED) {
+                return $this->userErrorResponse(['account' => TranslationCode::ERROR_ACTIVATE_ACCOUNT_ACTIVATED]);
+            }
+
             $activated = $this->userService->activateUserAccount($request->get('email'), $request->get('code'));
 
             if (!$activated) {
@@ -227,7 +234,12 @@ class UserController extends Controller
     public function getLoggedUser()
     {
         try {
-            return $this->successResponse(Auth::user());
+            /** @var User $user */
+            $user = Auth::user();
+
+            $userData = $this->userService->generateLoginData($user);
+
+            return $this->successResponse($userData);
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
 

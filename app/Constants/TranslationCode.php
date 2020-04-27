@@ -17,12 +17,15 @@ class TranslationCode
 
     /* Register */
     const ERROR_REGISTER_NAME_REQUIRED = 'errors.registerName.required';
-    const ERROR_REGISTER_NAME_ALPHA_SPACES = 'errors.registerName.alphaSpaces';
+    const ERROR_REGISTER_NAME_NAME = 'errors.registerName.name';
     const ERROR_REGISTER_EMAIL_REQUIRED = 'errors.registerEmail.required';
     const ERROR_REGISTER_EMAIL_INVALID = 'errors.registerEmail.invalid';
     const ERROR_REGISTER_EMAIL_REGISTERED = 'errors.registerEmail.registered';
     const ERROR_REGISTER_PASSWORD_REQUIRED = 'errors.registerPassword.required';
-    const ERROR_REGISTER_PASSWORD_MIN6 = 'errors.registerPassword.min6';
+    const ERROR_REGISTER_PASSWORD_MIN8 = 'errors.registerPassword.min8';
+    const ERROR_REGISTER_PASSWORD_COMPLEXITY = 'errors.registerPassword.complexity';
+    const ERROR_REGISTER_RETYPE_PASSWORD_REQUIRED = 'errors.registerRetypePassword.required';
+    const ERROR_REGISTER_RETYPE_PASSWORD_SAME = 'errors.registerRetypePassword.same';
 
     /* Activation/Resend activation/Email change */
     const ERROR_ACTIVATE_EMAIL_REQUIRED = 'errors.activateEmail.required';
@@ -39,11 +42,14 @@ class TranslationCode
     const ERROR_FORGOT_EMAIL_NOT_REGISTERED = 'errors.forgotEmail.notRegistered';
     const ERROR_FORGOT_CODE_REQUIRED = 'errors.forgotCode.required';
     const ERROR_FORGOT_PASSWORD_REQUIRED = 'errors.forgotPassword.required';
-    const ERROR_FORGOT_PASSWORD_MIN6 = 'errors.forgotPassword.min6';
+    const ERROR_FORGOT_PASSWORD_MIN8 = 'errors.forgotPassword.min8';
+    const ERROR_FORGOT_PASSWORD_COMPLEXITY = 'errors.forgotPassword.complexity';
+    const ERROR_FORGOT_RETYPE_PASSWORD_REQUIRED = 'errors.forgotRetypePassword.required';
+    const ERROR_FORGOT_RETYPE_PASSWORD_SAME = 'errors.forgotRetypePassword.same';
     const ERROR_FORGOT_ACCOUNT_UNACTIVATED = 'errors.forgotAccount.notActivated';
     const ERROR_FORGOT_CODE_SEND_COOLDOWN = 'errors.forgotCode.sendCooldown';
     const ERROR_FORGOT_CODE_INVALID = 'errors.forgotCode.invalid';
-    const ERROR_FORGOT_PASSED_1H = 'errors.forgot.passed1H';
+    const ERROR_FORGOT_PASSED_1H = 'errors.forgotCode.passed1H';
 
     /* Login */
     const ERROR_EMAIL_REQUIRED = 'errors.email.required';
@@ -67,11 +73,14 @@ class TranslationCode
 
     /* Update profile */
     const ERROR_UPDATE_NAME_REQUIRED = 'errors.updateName.required';
-    const ERROR_UPDATE_NAME_ALPHA_SPACES = 'errors.updateName.alphaSpaces';
+    const ERROR_UPDATE_NAME_NAME = 'errors.updateName.name';
     const ERROR_UPDATE_EMAIL_REQUIRED = 'errors.updateEmail.required';
     const ERROR_UPDATE_EMAIL_INVALID = 'errors.updateEmail.invalid';
     const ERROR_UPDATE_OLD_PASSWORD_REQUIRED = 'errors.updateNewPassword.requiredOldPassword';
-    const ERROR_UPDATE_NEW_PASSWORD_MIN6 = 'errors.updateNewPassword.min6';
+    const ERROR_UPDATE_NEW_PASSWORD_MIN8 = 'errors.updateNewPassword.min8';
+    const ERROR_UPDATE_NEW_PASSWORD_COMPLEXITY = 'errors.updateNewPassword.complexity';
+    const ERROR_UPDATE_RETYPE_PASSWORD_REQUIRED = 'errors.updateNewPassword.required';
+    const ERROR_UPDATE_RETYPE_PASSWORD_SAME = 'errors.updateNewPassword.same';
     const ERROR_UPDATE_LANGUAGE_REQUIRED = 'errors.updateLanguage.required';
     const ERROR_UPDATE_LANGUAGE_EXISTS = 'errors.updateLanguage.notExists';
     const ERROR_UPDATE_EMAIL_REGISTERED = 'errors.updateEmail.registered';

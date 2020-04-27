@@ -13,8 +13,9 @@ $router->options('/{any:.*}', ['middleware' => ['cors'], function () {
 
 /** Routes that doesn't require auth */
 $router->group(['middleware' => 'cors'], function () use ($router) {
-    /** Information about this API */
+    /** Misc routes */
     $router->get('/', ['uses' => 'ApiController@version']);
+    $router->get('/languages', ['uses' => 'ApiController@getLanguages']);
 
     /** Users routes */
     $router->post('/login', ['uses' => 'LoginController@login']);

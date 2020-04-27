@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Language;
 use App\Services\LogService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -39,6 +41,26 @@ class ApiController extends Controller
             return $this->successResponse($apiDetails);
         } catch (Exception $e) {
             Log::error(LogService::getExceptionTraceAsString($e));
+
+            return $this->errorResponse();
+        }
+    }
+
+    /**
+     * Get all languages
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getLanguages(Request $request)
+    {
+        try {
+            $languages = Language::all();
+
+            return $this->successResponse($languages);
+        } catch (Exception $e) {
+            Log::error(LogService::getExceptionTraceAsString($e, $request));
 
             return $this->errorResponse();
         }

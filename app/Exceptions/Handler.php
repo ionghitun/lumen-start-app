@@ -74,7 +74,7 @@ class Handler extends ExceptionHandler
         $response = [
             'isError' => true,
             'userFault' => false,
-            'errorMessage' => ['application' => TranslationCode::ERROR_APPLICATION]
+            'errorMessages' => ['application' => TranslationCode::ERROR_APPLICATION]
         ];
 
         return response()->json($response, Response::HTTP_OK);
