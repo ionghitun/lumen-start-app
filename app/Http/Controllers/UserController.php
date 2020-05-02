@@ -7,13 +7,13 @@ use App\Models\User;
 use App\Services\LogService;
 use App\Services\UserService;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class UserController
@@ -38,7 +38,7 @@ class UserController extends Controller
     /**
      * Register the user, send activation code on email
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -60,8 +60,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -70,7 +70,7 @@ class UserController extends Controller
     /**
      * Generate and send a forgot code on email
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -101,8 +101,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -111,7 +111,7 @@ class UserController extends Controller
     /**
      * Change password with generated code
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -126,8 +126,8 @@ class UserController extends Controller
 
             /** @var User|null $user */
             $user = User::whereEncrypted('email', $request->get('email'))
-                ->where('forgot_code', $request->get('code'))
-                ->first();
+                        ->where('forgot_code', $request->get('code'))
+                        ->first();
 
             if (!$user) {
                 return $this->userErrorResponse(['forgot' => TranslationCode::ERROR_FORGOT_CODE_INVALID]);
@@ -144,8 +144,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -154,7 +154,7 @@ class UserController extends Controller
     /**
      * Activate account
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -169,7 +169,6 @@ class UserController extends Controller
 
             DB::beginTransaction();
 
-            /** @var User|null $user */
             $user = User::whereEncrypted('email', $request->get('email'))->first();
 
             if ($user->status === User::STATUS_CONFIRMED) {
@@ -185,8 +184,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -195,7 +194,7 @@ class UserController extends Controller
     /**
      * Resend activation code
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -219,8 +218,8 @@ class UserController extends Controller
             } else {
                 return $this->userErrorResponse($error);
             }
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -240,18 +239,17 @@ class UserController extends Controller
             $userData = $this->userService->generateLoginData($user);
 
             return $this->successResponse($userData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }
-
     }
 
     /**
      * Update profile
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -270,7 +268,6 @@ class UserController extends Controller
             $email = $request->get('email');
 
             if ($user->email !== $email) {
-                /** @var User|null $userExists */
                 $userExists = User::whereEncrypted('email', $email)->first();
 
                 if ($userExists) {
@@ -289,8 +286,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse($user);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -299,7 +296,7 @@ class UserController extends Controller
     /**
      * Change picture
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -322,8 +319,8 @@ class UserController extends Controller
             DB::commit();
 
             return $this->successResponse($user);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }

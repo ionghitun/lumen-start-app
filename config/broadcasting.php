@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'default' => env('BROADCAST_DRIVER'),
+    'default'     => env('BROADCAST_DRIVER'),
     'connections' => [
         'redis' => [
-            'driver' => 'redis',
+            'driver'     => 'redis',
             'connection' => 'default',
         ],
-        'log' => [
+        'log'   => [
             'driver' => 'log',
         ],
-        'null' => [
+        'null'  => [
             'driver' => 'null',
         ]
     ]

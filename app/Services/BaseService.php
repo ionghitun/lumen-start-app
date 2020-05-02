@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class BaseService
@@ -23,7 +24,7 @@ class BaseService
     /**
      * Apply search
      *
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @param $term
      *
      * @return Builder
@@ -46,8 +47,8 @@ class BaseService
     /**
      * Apply filters
      *
-     * @param Builder $builder
-     * @param array $filters
+     * @param  Builder|BaseModel  $builder
+     * @param  array  $filters
      *
      * @return Builder
      */
@@ -69,8 +70,8 @@ class BaseService
     /**
      * Apply sort params.
      *
-     * @param Request $request
-     * @param $builder
+     * @param  Request  $request
+     * @param  Builder|BaseModel  $builder
      *
      * @return Builder
      */
@@ -78,7 +79,7 @@ class BaseService
     {
         if ($request->has('sortColumn') || $request->has('sortOrder')) {
             $sortColumn = strtolower($request->get('sortColumn', 'id'));
-            $sortOrder = strtolower($request->get('sortOrder', 'asc'));
+            $sortOrder  = strtolower($request->get('sortOrder', 'asc'));
 
             if (in_array($sortColumn, $builder->getModel()->getSortable()) && in_array($sortOrder, ['asc', 'desc'])) {
                 if (in_array($sortColumn, $builder->getModel()->getEncrypted())) {
@@ -95,7 +96,7 @@ class BaseService
     /**
      * Get pagination offset and limit.
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return array
      */
@@ -111,7 +112,7 @@ class BaseService
         }
 
         $offset = 0;
-        $page = 1;
+        $page   = 1;
 
         if ($request->has('page')) {
             $requestPage = (int)$request->get('page');
@@ -124,16 +125,16 @@ class BaseService
         }
 
         return [
-            'page' => $page,
+            'page'   => $page,
             'offset' => $offset,
-            'limit' => $limit
+            'limit'  => $limit
         ];
     }
 
     /**
      * Get pagination data.
      *
-     * @param Builder $builder
+     * @param  Builder  $builder
      * @param $page
      * @param $limit
      *
@@ -146,9 +147,9 @@ class BaseService
         $totalPages = ceil($totalEntries / $limit);
 
         return [
-            'currentPage' => $page > $totalPages ? $totalPages : $page,
-            'totalPages' => $totalPages,
-            'limit' => $limit,
+            'currentPage'  => $page > $totalPages ? $totalPages : $page,
+            'totalPages'   => $totalPages,
+            'limit'        => $limit,
             'totalEntries' => $totalEntries
         ];
     }
@@ -156,7 +157,7 @@ class BaseService
     /**
      * Get language to use.
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return Language
      *
@@ -165,7 +166,6 @@ class BaseService
     public function getLanguage(Request $request)
     {
         if ($request->has('language')) {
-            /** @var Language $language */
             $language = Language::where('code', strtolower($request->get('language')))->first();
 
             if ($language) {
@@ -177,7 +177,6 @@ class BaseService
         $user = Auth::user();
 
         if ($user) {
-            /** @var Language $language */
             $language = Language::where('id', $user->language_id)->first();
 
             if ($language) {
@@ -185,7 +184,6 @@ class BaseService
             }
         }
 
-        /** @var Language $language */
         $language = Language::where('code', env('APP_LOCALE'))->first();
 
         if ($language) {
@@ -205,22 +203,20 @@ class BaseService
      */
     public function getUserPermissionActions($userId, $permissionId)
     {
-        /** @var RolePermission $rolePermission */
-        $rolePermission = Cache::tags(['permissions'])
-            ->remember(
-                'permission' . $userId . $permissionId,
-                env('CACHE_PERIOD'),
-                function () use ($userId, $permissionId) {
-                    return RolePermission::where('permission_id', $permissionId)
-                        ->whereHas('role', function ($query) use ($userId) {
-                            $query->whereHas('users', function ($query) use ($userId) {
-                                $query->where('id', $userId);
-                            });
-                        })->first();
-                }
-            );
-
-        return $rolePermission;
+        return Cache::tags(['permissions'])
+                    ->remember(
+                        'permission' . $userId . $permissionId,
+                        env('CACHE_PERIOD'),
+                        function () use ($userId, $permissionId) {
+                            return RolePermission::where('permission_id', $permissionId)
+                                                 ->whereHas('role', function ($query) use ($userId) {
+                                                     $query->whereHas('users',
+                                                         function ($query) use ($userId) {
+                                                             $query->where('id', $userId);
+                                                         });
+                                                 })->first();
+                        }
+                    );
     }
 
     /**
@@ -229,8 +225,8 @@ class BaseService
      * @param $path
      * @param $image
      * @param $name
-     * @param bool $generateAvatar
-     * @param bool $onlyAvatar
+     * @param  bool  $generateAvatar
+     * @param  bool  $onlyAvatar
      *
      * @return false|string
      */
@@ -291,6 +287,7 @@ class BaseService
      * Get average image color.
      *
      * @param $image
+     *
      * @return array
      */
     private function getColorAverage($image)

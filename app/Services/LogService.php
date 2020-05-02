@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 /**
  * Class LogService
@@ -15,19 +15,19 @@ use Illuminate\Support\Facades\Auth;
 class LogService
 {
     /**
-     * Get full trace of an exception.
+     * Get full trace of an throwable.
      *
-     * @param Exception $exception
-     * @param Request|null $request
+     * @param  Throwable  $throwable
+     * @param  Request|null  $request
      *
      * @return string
      */
-    public static function getExceptionTraceAsString(Exception $exception, Request $request = null)
+    public static function getThrowableTraceAsString(Throwable $throwable, Request $request = null)
     {
         /** @var User|null $user */
         $user = Auth::user();
 
-        $errorString = '#00 Exception: ' . $exception->getCode() . ' --- ' . $exception->getMessage() . "\n";
+        $errorString = '#00 Exception: ' . $throwable->getCode() . ' --- ' . $throwable->getMessage() . "\n";
         $errorString .= '#01 User: ' . ($user ? $user->id . ' --- ' . $user->name : '') . "\n";
 
         if ($request) {
@@ -36,7 +36,7 @@ class LogService
 
         $count = 0;
 
-        foreach ($exception->getTrace() as $frame) {
+        foreach ($throwable->getTrace() as $frame) {
             $args = '';
 
             if (isset($frame['args'])) {

@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class DeleteExpiredTokensCommand.
@@ -41,10 +42,10 @@ class DeleteExpiredTokensCommand extends Command
             DB::commit();
 
             $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Command [delete:expiredTokens] ended.');
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
-            $this->error($e->getMessage());
+            $this->error($t->getMessage());
         }
     }
 
@@ -56,9 +57,8 @@ class DeleteExpiredTokensCommand extends Command
      */
     private function removeExpiredTokens()
     {
-        /** @var UserToken[] $userTokens */
         $userTokens = UserToken::where('expire_on', '<=', Carbon::now()->format('Y-m-d H:i:s'))
-            ->get();
+                               ->get();
 
         $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Found ' . $userTokens->count() . ' tokens to be removed.');
 

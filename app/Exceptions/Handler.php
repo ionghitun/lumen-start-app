@@ -40,13 +40,13 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param Throwable $exception
+     * @param  Throwable  $throwable
      *
      * @throws Exception
      */
-    public function report(Throwable $exception)
+    public function report(Throwable $throwable)
     {
-        parent::report($exception);
+        parent::report($throwable);
     }
 
     /**
@@ -54,26 +54,24 @@ class Handler extends ExceptionHandler
      *
      * When in production we return same json structure even when error occurred.
      *
-     * @param Request $request
-     * @param Throwable $exception
+     * @param  Request  $request
+     * @param  Throwable  $throwable
      *
      * @return JsonResponse|Response
      *
      * @throws Throwable
      */
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $throwable)
     {
         if (env('APP_DEBUG')) {
-            return parent::render($request, $exception);
+            return parent::render($request, $throwable);
         }
 
-        $exception = new Exception($exception->getMessage(), $exception->getCode(), $exception);
-
-        Log::error(LogService::getExceptionTraceAsString($exception, $request));
+        Log::error(LogService::getThrowableTraceAsString($throwable, $request));
 
         $response = [
-            'isError' => true,
-            'userFault' => false,
+            'isError'       => true,
+            'userFault'     => false,
             'errorMessages' => ['application' => TranslationCode::ERROR_APPLICATION]
         ];
 

@@ -15,7 +15,7 @@ class NotificationService
     /**
      * Send notification to user.
      *
-     * @param UserNotification $notification
+     * @param  UserNotification  $notification
      */
     public function sendNotification(UserNotification $notification)
     {
@@ -36,11 +36,11 @@ class NotificationService
     {
         $userNotification = new UserNotification();
 
-        $userNotification->user_id = $userId;
-        $userNotification->message = $message;
+        $userNotification->user_id  = $userId;
+        $userNotification->message  = $message;
         $userNotification->ref_name = $refName;
-        $userNotification->ref_id = $refId;
-        $userNotification->status = UserNotification::STATUS_UNREAD;
+        $userNotification->ref_id   = $refId;
+        $userNotification->status   = UserNotification::STATUS_UNREAD;
 
         $userNotification->save();
 

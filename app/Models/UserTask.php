@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class UserTask
@@ -21,6 +24,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property User $user
  * @property User $assignedUser
+ *
+ * @method static Builder|UserTask newModelQuery()
+ * @method static Builder|UserTask newQuery()
+ * @method static Builder|UserTask query()
+ * @method static Builder|UserTask whereAssignedUserId($value)
+ * @method static Builder|UserTask whereCreatedAt($value)
+ * @method static Builder|UserTask whereDeadline($value)
+ * @method static Builder|UserTask whereDeletedAt($value)
+ * @method static Builder|UserTask whereDescription($value)
+ * @method static Builder|UserTask whereId($value)
+ * @method static Builder|UserTask whereStatus($value)
+ * @method static Builder|UserTask whereUpdatedAt($value)
+ * @method static Builder|UserTask whereUserId($value)
+ * @method static QueryBuilder|UserTask onlyTrashed()
+ * @method static QueryBuilder|UserTask withTrashed()
+ * @method static QueryBuilder|UserTask withoutTrashed()
+ * @method static Builder|BaseModel orWhereEncrypted($column, $value)
+ * @method static Builder|BaseModel orWhereNotEncrypted($column, $value)
+ * @method static Builder|BaseModel orderByEncrypted($column, $direction)
+ * @method static Builder|BaseModel whereEncrypted($column, $value)
+ * @method static Builder|BaseModel whereNotEncrypted($column, $value)
  *
  * @package App\Models
  */

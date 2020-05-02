@@ -6,10 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 use Laravel\Lumen\Auth\Authorizable;
 
 /**
@@ -32,12 +35,45 @@ use Laravel\Lumen\Auth\Authorizable;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  *
- * @property-read Collection|UserToken[] $userTokens
- * @property-read Collection|UserNotification[] $userNotifications
  * @property Language $language
  * @property Role $role
+ *
+ * @property-read Collection|UserToken[] $userTokens
+ * @property-read Collection|UserNotification[] $userNotifications
  * @property-read Collection|UserTask[] $userTasks
  * @property-read Collection|UserTask[] $userAssignedTasks
+ * @property-read int|null $user_assigned_tasks_count
+ * @property-read int|null $user_notifications_count
+ * @property-read int|null $user_tasks_count
+ * @property-read int|null $user_tokens_count
+ *
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ * @method static Builder|User query()
+ * @method static Builder|User whereActivationCode($value)
+ * @method static Builder|User whereCreatedAt($value)
+ * @method static Builder|User whereDeletedAt($value)
+ * @method static Builder|User whereEmail($value)
+ * @method static Builder|User whereFacebookId($value)
+ * @method static Builder|User whereForgotCode($value)
+ * @method static Builder|User whereForgotTime($value)
+ * @method static Builder|User whereGoogleId($value)
+ * @method static Builder|User whereId($value)
+ * @method static Builder|User whereLanguageId($value)
+ * @method static Builder|User whereName($value)
+ * @method static Builder|User wherePassword($value)
+ * @method static Builder|User wherePicture($value)
+ * @method static Builder|User whereRoleId($value)
+ * @method static Builder|User whereStatus($value)
+ * @method static Builder|User whereUpdatedAt($value)
+ * @method static QueryBuilder|User onlyTrashed()
+ * @method static QueryBuilder|User withTrashed()
+ * @method static QueryBuilder|User withoutTrashed()
+ * @method static Builder|BaseModel orWhereEncrypted($column, $value)
+ * @method static Builder|BaseModel orWhereNotEncrypted($column, $value)
+ * @method static Builder|BaseModel orderByEncrypted($column, $direction)
+ * @method static Builder|BaseModel whereEncrypted($column, $value)
+ * @method static Builder|BaseModel whereNotEncrypted($column, $value)
  *
  * @package App\Models
  */

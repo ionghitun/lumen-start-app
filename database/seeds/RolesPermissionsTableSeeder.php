@@ -16,43 +16,43 @@ class RolesPermissionsTableSeeder extends Seeder
     public function run()
     {
         RolePermission::create([
-            'role_id' => Role::ID_ADMIN,
+            'role_id'       => Role::ID_ADMIN,
             'permission_id' => Permission::ID_USERS,
-            'read' => RolePermission::PERMISSION_TRUE,
-            'create' => RolePermission::PERMISSION_TRUE,
-            'update' => RolePermission::PERMISSION_TRUE,
-            'delete' => RolePermission::PERMISSION_TRUE,
-            'manage' => RolePermission::MANAGE_ALL
+            'read'          => RolePermission::PERMISSION_TRUE,
+            'create'        => RolePermission::PERMISSION_TRUE,
+            'update'        => RolePermission::PERMISSION_TRUE,
+            'delete'        => RolePermission::PERMISSION_TRUE,
+            'manage'        => RolePermission::MANAGE_ALL
         ]);
 
         RolePermission::create([
-            'role_id' => Role::ID_ADMIN,
+            'role_id'       => Role::ID_ADMIN,
             'permission_id' => Permission::ID_ROLES,
-            'read' => RolePermission::PERMISSION_TRUE,
-            'create' => RolePermission::PERMISSION_TRUE,
-            'update' => RolePermission::PERMISSION_TRUE,
-            'delete' => RolePermission::PERMISSION_TRUE,
-            'manage' => RolePermission::MANAGE_ALL
+            'read'          => RolePermission::PERMISSION_TRUE,
+            'create'        => RolePermission::PERMISSION_TRUE,
+            'update'        => RolePermission::PERMISSION_TRUE,
+            'delete'        => RolePermission::PERMISSION_TRUE,
+            'manage'        => RolePermission::MANAGE_ALL
         ]);
 
         RolePermission::create([
-            'role_id' => Role::ID_ADMIN,
+            'role_id'       => Role::ID_ADMIN,
             'permission_id' => Permission::ID_TASKS,
-            'read' => RolePermission::PERMISSION_TRUE,
-            'create' => RolePermission::PERMISSION_TRUE,
-            'update' => RolePermission::PERMISSION_TRUE,
-            'delete' => RolePermission::PERMISSION_TRUE,
-            'manage' => RolePermission::MANAGE_ALL
+            'read'          => RolePermission::PERMISSION_TRUE,
+            'create'        => RolePermission::PERMISSION_TRUE,
+            'update'        => RolePermission::PERMISSION_TRUE,
+            'delete'        => RolePermission::PERMISSION_TRUE,
+            'manage'        => RolePermission::MANAGE_ALL
         ]);
 
         RolePermission::create([
-            'role_id' => Role::ID_USER,
+            'role_id'       => Role::ID_USER,
             'permission_id' => Permission::ID_TASKS,
-            'read' => RolePermission::PERMISSION_TRUE,
-            'create' => RolePermission::PERMISSION_TRUE,
-            'update' => RolePermission::PERMISSION_TRUE,
-            'delete' => RolePermission::PERMISSION_TRUE,
-            'manage' => RolePermission::MANAGE_OWN
+            'read'          => RolePermission::PERMISSION_TRUE,
+            'create'        => RolePermission::PERMISSION_TRUE,
+            'update'        => RolePermission::PERMISSION_TRUE,
+            'delete'        => RolePermission::PERMISSION_TRUE,
+            'manage'        => RolePermission::MANAGE_OWN
         ]);
     }
 }

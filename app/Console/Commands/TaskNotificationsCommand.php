@@ -7,10 +7,10 @@ use App\Models\UserTask;
 use App\Services\LogService;
 use App\Services\NotificationService;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class TaskNotificationsCommand
@@ -59,10 +59,10 @@ class TaskNotificationsCommand extends Command
             DB::commit();
 
             $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Command [send:taskNotifications] ended.');
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
-            $this->error($e->getMessage());
+            $this->error($t->getMessage());
         }
     }
 
@@ -71,17 +71,16 @@ class TaskNotificationsCommand extends Command
      */
     private function checkExpiringTasks()
     {
-        /** @var UserTask[] $expiringUserTasks */
         $expiringUserTasks = UserTask::where('status', UserTask::STATUS_ASSIGNED)
-            ->where('deadline', Carbon::now()->format('Y-m-d'))
-            ->get();
+                                     ->where('deadline', Carbon::now()->format('Y-m-d'))
+                                     ->get();
 
         $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Found ' . $expiringUserTasks->count() . ' expiring tasks.');
 
         foreach ($expiringUserTasks as $expiringUserTask) {
             $userNotification = $this->notificationService->addNotification(
                 $expiringUserTask->assigned_user_id,
-                TranslationCode::NOTIFICATION_USER_TASK_EXPIRING,
+                TranslationCode::NOTIFICATION_TASK_EXPIRING,
                 'userTask',
                 $expiringUserTask->id
             );
@@ -95,17 +94,16 @@ class TaskNotificationsCommand extends Command
      */
     private function checkExpiredTasks()
     {
-        /** @var UserTask[] $expiringUserTasks */
         $expiredUserTasks = UserTask::where('status', UserTask::STATUS_ASSIGNED)
-            ->where('deadline', Carbon::now()->subDay()->format('Y-m-d'))
-            ->get();
+                                    ->where('deadline', Carbon::now()->subDay()->format('Y-m-d'))
+                                    ->get();
 
         $this->info('[' . Carbon::now()->format('Y-m-d H:i:s') . ']: Found ' . $expiredUserTasks->count() . ' expired tasks.');
 
         foreach ($expiredUserTasks as $expiredUserTask) {
             $userNotification = $this->notificationService->addNotification(
                 $expiredUserTask->assigned_user_id,
-                TranslationCode::NOTIFICATION_USER_TASK_EXPIRED,
+                TranslationCode::NOTIFICATION_TASK_EXPIRED,
                 'userTask',
                 $expiredUserTask->id
             );

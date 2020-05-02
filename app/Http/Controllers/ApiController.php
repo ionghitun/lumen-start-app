@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Language;
 use App\Services\LogService;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class ApiController
@@ -29,9 +29,9 @@ class ApiController extends Controller
             $apiDetails = [
                 'cors' => 'enabled',
                 'user' => [
-                    'register' => 'enabled',
-                    'account' => [
-                        'needActivation' => true,
+                    'register'    => 'enabled',
+                    'account'     => [
+                        'needActivation'   => true,
                         'canResetPassword' => true
                     ],
                     'socialLogin' => 'enabled'
@@ -39,8 +39,8 @@ class ApiController extends Controller
             ];
 
             return $this->successResponse($apiDetails);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }
@@ -49,7 +49,7 @@ class ApiController extends Controller
     /**
      * Get all languages
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -59,8 +59,8 @@ class ApiController extends Controller
             $languages = Language::all();
 
             return $this->successResponse($languages);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }

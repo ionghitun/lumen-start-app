@@ -19,17 +19,17 @@ class SendMail extends Mailable
      * SendMail constructor.
      *
      * @param $to
-     * @param string $subject
-     * @param string $blade
-     * @param array $data
+     * @param  string  $subject
+     * @param  string  $blade
+     * @param  array  $data
      */
     public function __construct($to, string $subject, string $blade, array $data)
     {
         $this->to($to)
-            ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
-            ->subject($subject)
-            ->view($blade)
-            ->with($data);
+             ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
+             ->subject($subject)
+             ->view($blade)
+             ->with($data);
     }
 
     /**

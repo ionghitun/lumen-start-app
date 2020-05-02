@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/** @var Generator $faker */
 $faker = new Generator();
 
 $faker->addProvider(new Lorem($faker));
@@ -48,17 +47,19 @@ $factory->define(Role::class, function () use ($faker) {
 
 $factory->define(User::class, function () use ($faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->safeEmail,
+        'name'     => $faker->name,
+        'email'    => $faker->safeEmail,
         'password' => Hash::make($faker->password),
-        'status' => $faker->randomElement([User::STATUS_UNCONFIRMED, User::STATUS_CONFIRMED, User::STATUS_EMAIL_UNCONFIRMED])
+        'status'   => $faker->randomElement([
+            User::STATUS_UNCONFIRMED, User::STATUS_CONFIRMED, User::STATUS_EMAIL_UNCONFIRMED
+        ])
     ];
 });
 
 $factory->define(UserToken::class, function () use ($faker) {
     return [
-        'token' => Str::random(32),
-        'type' => UserToken::TYPE_REMEMBER_ME,
+        'token'     => Str::random(32),
+        'type'      => UserToken::TYPE_REMEMBER_ME,
         'expire_on' => $faker->dateTime("+ 1 month")->format('Y-m-d H:i:s')
     ];
 });
@@ -66,14 +67,14 @@ $factory->define(UserToken::class, function () use ($faker) {
 $factory->define(UserNotification::class, function () use ($faker) {
     return [
         'message' => $faker->text,
-        'status' => $faker->randomElement([UserNotification::STATUS_UNREAD, UserNotification::STATUS_READ])
+        'status'  => $faker->randomElement([UserNotification::STATUS_UNREAD, UserNotification::STATUS_READ])
     ];
 });
 
 $factory->define(UserTask::class, function () use ($faker) {
     return [
         'description' => $faker->text,
-        'deadline' => $faker->date('Y-m-d', "+ 1 month"),
-        'status' => $faker->randomElement([UserTask::STATUS_ASSIGNED, UserTask::STATUS_COMPLETED])
+        'deadline'    => $faker->date('Y-m-d', "+ 1 month"),
+        'status'      => $faker->randomElement([UserTask::STATUS_ASSIGNED, UserTask::STATUS_COMPLETED])
     ];
 });

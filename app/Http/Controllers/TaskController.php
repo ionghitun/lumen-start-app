@@ -6,16 +6,14 @@ use App\Constants\TranslationCode;
 use App\Models\Permission;
 use App\Models\RolePermission;
 use App\Models\User;
-use App\Models\UserTask;
 use App\Services\LogService;
 use App\Services\TaskService;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class TaskController
@@ -40,7 +38,7 @@ class TaskController extends Controller
     /**
      * Get users tasks
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -50,14 +48,12 @@ class TaskController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
-            /** @var RolePermission $userRolePermission */
             $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
 
             if ($userRolePermission->read !== RolePermission::PERMISSION_TRUE) {
                 return $this->forbiddenResponse();
             }
 
-            /** @var Builder $userTasks */
             $userTasks = $this->taskService->getUserTasksBuilder($userRolePermission->manage);
 
             if ($request->has('search')) {
@@ -72,14 +68,14 @@ class TaskController extends Controller
 
             $paginationParams = $this->baseService->getPaginationParams($request);
 
-            $pagination = $this->baseService->getPaginationData($userTasks, $paginationParams['page'], $paginationParams['limit']);
+            $pagination = $this->baseService->getPaginationData($userTasks, $paginationParams['page'],
+                $paginationParams['limit']);
 
-            /** @var UserTask[] $userTasks */
             $userTasks = $userTasks->offset($paginationParams['offset'])->limit($paginationParams['limit'])->get();
 
             return $this->successResponse($userTasks, $pagination);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -88,18 +84,27 @@ class TaskController extends Controller
     /**
      * Create a task
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
     public function createTask(Request $request)
     {
         try {
+            /** @var User $user */
+            $user = Auth::user();
+
+            $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
+
+            if ($userRolePermission->create !== RolePermission::PERMISSION_TRUE) {
+                return $this->forbiddenResponse();
+            }
+
             //TODO
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }
@@ -115,16 +120,26 @@ class TaskController extends Controller
     public function getTask($id)
     {
         try {
-            /** @var UserTask|null $userTask */
-            $userTask = UserTask::find($id);
+            /** @var User $user */
+            $user = Auth::user();
+
+            $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
+
+            if ($userRolePermission->read !== RolePermission::PERMISSION_TRUE) {
+                return $this->forbiddenResponse();
+            }
+
+            $userTasks = $this->taskService->getUserTasksBuilder($userRolePermission->manage);
+
+            $userTask = $userTasks->where('id', $id)->first();
 
             if (!$userTask) {
                 return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
             }
 
             return $this->successResponse($userTask);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }
@@ -134,15 +149,25 @@ class TaskController extends Controller
      * Update a task
      *
      * @param $id
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
     public function updateTask($id, Request $request)
     {
         try {
-            /** @var UserTask|null $userTask */
-            $userTask = UserTask::find($id);
+            /** @var User $user */
+            $user = Auth::user();
+
+            $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
+
+            if ($userRolePermission->update !== RolePermission::PERMISSION_TRUE) {
+                return $this->forbiddenResponse();
+            }
+
+            $userTasks = $this->taskService->getUserTasksBuilder($userRolePermission->manage);
+
+            $userTask = $userTasks->where('id', $id)->first();
 
             if (!$userTask) {
                 return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
@@ -150,9 +175,9 @@ class TaskController extends Controller
 
             //TODO
 
-            return $this->successResponse($userTask);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+            return $this->successResponse();
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }
@@ -168,8 +193,18 @@ class TaskController extends Controller
     public function deleteTask($id)
     {
         try {
-            /** @var UserTask|null $userTask */
-            $userTask = UserTask::find($id);
+            /** @var User $user */
+            $user = Auth::user();
+
+            $userRolePermission = $this->baseService->getUserPermissionActions($user->id, Permission::ID_TASKS);
+
+            if ($userRolePermission->delete !== RolePermission::PERMISSION_TRUE) {
+                return $this->forbiddenResponse();
+            }
+
+            $userTasks = $this->taskService->getUserTasksBuilder($userRolePermission->manage, true);
+
+            $userTask = $userTasks->where('id', $id)->first();
 
             if (!$userTask) {
                 return $this->userErrorResponse(['notFound' => TranslationCode::ERROR_NOT_FOUND]);
@@ -182,8 +217,8 @@ class TaskController extends Controller
             DB::commit();
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t));
 
             return $this->errorResponse();
         }

@@ -87,10 +87,6 @@ $app->register(Laravel\Socialite\SocialiteServiceProvider::class);
 $app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
 $app->register(IonGhitun\MysqlEncryption\MysqlEncryptionServiceProvider::class);
 
-if ($app->environment() !== 'production') {
-    $app->register(Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-}
-
 $app->configure('broadcasting');
 $app->configure('database');
 $app->configure('filesystems');

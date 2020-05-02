@@ -15,12 +15,12 @@ class ExampleTest extends TestCase
         $this->assertEquals(
             json_encode([
                 'isError' => false,
-                'result' => [
+                'result'  => [
                     'cors' => 'enabled',
                     'user' => [
-                        'register' => 'enabled',
-                        'account' => [
-                            'needActivation' => true,
+                        'register'    => 'enabled',
+                        'account'     => [
+                            'needActivation'   => true,
                             'canResetPassword' => true
                         ],
                         'socialLogin' => 'enabled'

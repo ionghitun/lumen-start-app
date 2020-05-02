@@ -1,8 +1,10 @@
 FROM nginx
 
+ARG VHOST_FILE
+
 WORKDIR /var/www
 
-ADD ./docker/nginx/vhost.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx/$VHOST_FILE /etc/nginx/conf.d/custom.conf
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 

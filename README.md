@@ -8,7 +8,7 @@
 
 Boilerplate for laravel/lumen framework https://github.com/laravel/lumen.
 
-## Instalation notes
+## Installation notes
 
 `$ composer create-project --prefer-dist ionghitun/lumen-start-app blog`
 
@@ -18,7 +18,7 @@ Boilerplate for laravel/lumen framework https://github.com/laravel/lumen.
 
 ## Documentation
 
-Official documentation for the framework can be found on the https://lumen.laravel.com/docs.
+The official documentation for the framework can be found on the https://lumen.laravel.com/docs.
 
 The project is docker ready via docker-compose, `.env.example` contains default configuration for docker.
 

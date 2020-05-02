@@ -28,16 +28,17 @@ class AppServiceProvider extends ServiceProvider
          * Validate phone number
          */
         Validator::extend('phone', function ($attribute, $value) {
-            $conditions = [];
+            $conditions   = [];
             $conditions[] = strlen($value) >= 10;
             $conditions[] = strlen($value) <= 16;
             $conditions[] = preg_match('/[^\d]/i', $value) === 0;
 
             $isDigit = (bool)array_product($conditions);
 
-            $isE123 = preg_match('/^(?:\((\+?\d+)?\)|\+?\d+) ?\d*(-?\d{2,3} ?){0,4}$/', $value) === 1 && strlen($value) <= 16;
+            $isE123 = preg_match('/^(?:\((\+?\d+)?\)|\+?\d+) ?\d*(-?\d{2,3} ?){0,4}$/',
+                    $value) === 1 && strlen($value) <= 16;
 
-            $conditions = [];
+            $conditions   = [];
             $conditions[] = strpos($value, '+') === 0;
             $conditions[] = strlen($value) >= 9;
             $conditions[] = strlen($value) <= 16;
@@ -45,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
 
             $isE164 = (bool)array_product($conditions);
 
-            $conditions = [];
+            $conditions   = [];
             $conditions[] = preg_match('/^(?:\+1|1)?\s?-?\(?\d{3}\)?(\s|-)?\d{3}-\d{4}$/i', $value) > 0;
 
             $isNANP = (bool)array_product($conditions) && strlen($value) <= 16;

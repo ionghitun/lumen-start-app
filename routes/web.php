@@ -7,9 +7,11 @@ use Laravel\Lumen\Routing\Router;
  *
  * @var Router $router
  */
-$router->options('/{any:.*}', ['middleware' => ['cors'], function () {
-    return response('OK', Response::HTTP_OK);
-}]);
+$router->options('/{any:.*}', [
+    'middleware' => ['cors'], function () {
+        return response('OK', Response::HTTP_OK);
+    }
+]);
 
 /** Routes that doesn't require auth */
 $router->group(['middleware' => 'cors'], function () use ($router) {

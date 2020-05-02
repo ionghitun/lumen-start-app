@@ -11,9 +11,9 @@ class TranslationCode
 {
     /* Misc */
     const ERROR_APPLICATION = 'errors.application';
-    const ERROR_UNAUTHORIZED = 'error.unauthorized';
-    const ERROR_FORBIDDEN = 'error.forbidden';
-    const ERROR_NOT_FOUND = 'error.notFound';
+    const ERROR_UNAUTHORIZED = 'errors.unauthorized';
+    const ERROR_FORBIDDEN = 'errors.forbidden';
+    const ERROR_NOT_FOUND = 'errors.notFound';
 
     /* Register */
     const ERROR_REGISTER_NAME_REQUIRED = 'errors.registerName.required';
@@ -60,16 +60,16 @@ class TranslationCode
     const ERROR_ACCOUNT_UNACTIVATED = 'errors.account.notActivated';
     const ERROR_REMEMBER_TOKEN_REQUIRED = 'errors.rememberToken.required';
     const ERROR_REMEMBER_TOKEN_INVALID = 'errors.rememberToken.invalid';
-    const ERROR_FACEBOOK_ID_REQUIRED = 'error.facebookId.required';
-    const ERROR_FACEBOOK_ACCESS_TOKEN_REQUIRED = 'error.facebookAccessToken.required';
-    const ERROR_FACEBOOK_ACCESS_TOKEN_INVALID = 'error.facebookAccessToken.invalid';
-    const ERROR_FACEBOOK_ACCESS_TOKEN_MISMATCH = 'error.facebookAccessToken.mismatch';
-    const ERROR_FACEBOOK_PERMISSION_EMAIL = 'error.facebookPermission.email';
-    const ERROR_GOOGLE_ID_REQUIRED = 'error.googleId.required';
-    const ERROR_GOOGLE_ACCESS_TOKEN_REQUIRED = 'error.googleAccessToken.required';
-    const ERROR_GOOGLE_ACCESS_TOKEN_INVALID = 'error.googleAccessToken.invalid';
-    const ERROR_GOOGLE_ACCESS_TOKEN_MISMATCH = 'error.googleAccessToken.mismatch';
-    const ERROR_GOOGLE_PERMISSION_EMAIL = 'error.googlePermission.email';
+    const ERROR_FACEBOOK_ID_REQUIRED = 'errors.facebookId.required';
+    const ERROR_FACEBOOK_ACCESS_TOKEN_REQUIRED = 'errors.facebookAccessToken.required';
+    const ERROR_FACEBOOK_ACCESS_TOKEN_INVALID = 'errors.facebookAccessToken.invalid';
+    const ERROR_FACEBOOK_ACCESS_TOKEN_MISMATCH = 'errors.facebookAccessToken.mismatch';
+    const ERROR_FACEBOOK_PERMISSION_EMAIL = 'errors.facebookPermission.email';
+    const ERROR_GOOGLE_ID_REQUIRED = 'errors.googleId.required';
+    const ERROR_GOOGLE_ACCESS_TOKEN_REQUIRED = 'errors.googleAccessToken.required';
+    const ERROR_GOOGLE_ACCESS_TOKEN_INVALID = 'errors.googleAccessToken.invalid';
+    const ERROR_GOOGLE_ACCESS_TOKEN_MISMATCH = 'errors.googleAccessToken.mismatch';
+    const ERROR_GOOGLE_PERMISSION_EMAIL = 'errors.googlePermission.email';
 
     /* Update profile */
     const ERROR_UPDATE_NAME_REQUIRED = 'errors.updateName.required';
@@ -89,6 +89,6 @@ class TranslationCode
     const ERROR_UPDATE_PICTURE_IMAGE = 'errors.updatePicture.image';
 
     /* Notifications */
-    const NOTIFICATION_USER_TASK_EXPIRING = 'user.task.expiring';
-    const NOTIFICATION_USER_TASK_EXPIRED = 'user.task.expired';
+    const NOTIFICATION_TASK_EXPIRING = 'notifications.task.expiring';
+    const NOTIFICATION_TASK_EXPIRED = 'notifications.task.expired';
 }

@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class Language
@@ -18,6 +21,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $deleted_at
  *
  * @property-read Collection|User[] $users
+ * @property-read int|null $users_count
+ *
+ * @method static Builder|Language newModelQuery()
+ * @method static Builder|Language newQuery()
+ * @method static Builder|Language query()
+ * @method static Builder|Language whereCode($value)
+ * @method static Builder|Language whereCreatedAt($value)
+ * @method static Builder|Language whereDeletedAt($value)
+ * @method static Builder|Language whereId($value)
+ * @method static Builder|Language whereName($value)
+ * @method static Builder|Language whereUpdatedAt($value)
+ * @method static QueryBuilder|Language onlyTrashed()
+ * @method static QueryBuilder|Language withTrashed()
+ * @method static QueryBuilder|Language withoutTrashed()
+ * @method static Builder|BaseModel orWhereEncrypted($column, $value)
+ * @method static Builder|BaseModel orWhereNotEncrypted($column, $value)
+ * @method static Builder|BaseModel orderByEncrypted($column, $direction)
+ * @method static Builder|BaseModel whereEncrypted($column, $value)
+ * @method static Builder|BaseModel whereNotEncrypted($column, $value)
  *
  * @package App\Models
  */

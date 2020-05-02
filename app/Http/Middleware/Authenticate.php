@@ -6,7 +6,6 @@ use App\Constants\TranslationCode;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 
 /**
  * Class Authenticate
@@ -25,7 +24,7 @@ class Authenticate
     /**
      * Authenticate constructor.
      *
-     * @param Auth $auth
+     * @param  Auth  $auth
      */
     public function __construct(Auth $auth)
     {
@@ -36,7 +35,7 @@ class Authenticate
      * Handle an incoming request.
      *
      * @param $request
-     * @param Closure $next
+     * @param  Closure  $next
      * @param $guard
      *
      * @return JsonResponse|mixed
@@ -45,8 +44,8 @@ class Authenticate
     {
         if ($this->auth->guard($guard)->guest()) {
             $response = [
-                'isError' => true,
-                'userFault' => true,
+                'isError'       => true,
+                'userFault'     => true,
                 'errorMessages' => ['authorization' => TranslationCode::ERROR_UNAUTHORIZED]
             ];
 

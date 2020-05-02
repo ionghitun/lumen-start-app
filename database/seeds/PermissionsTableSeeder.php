@@ -14,17 +14,17 @@ class PermissionsTableSeeder extends Seeder
     public function run()
     {
         Permission::create([
-            'id' => Permission::ID_USERS,
+            'id'   => Permission::ID_USERS,
             'name' => 'Users'
         ]);
 
         Permission::create([
-            'id' => Permission::ID_ROLES,
+            'id'   => Permission::ID_ROLES,
             'name' => 'Roles'
         ]);
 
         Permission::create([
-            'id' => Permission::ID_TASKS,
+            'id'   => Permission::ID_TASKS,
             'name' => 'Tasks'
         ]);
     }

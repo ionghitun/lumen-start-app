@@ -58,9 +58,9 @@ class Controller extends BaseController
     /**
      * Success response
      *
-     * @param string|array|null $data
-     * @param array|null $pagination
-     * @param bool|null $refreshToken
+     * @param  string|array|null  $data
+     * @param  array|null  $pagination
+     * @param  bool|null  $refreshToken
      *
      * @return JsonResponse
      */
@@ -90,13 +90,13 @@ class Controller extends BaseController
     {
         if ($this->isError) {
             $response = [
-                'isError' => $this->isError,
-                'userFault' => $this->userFault,
+                'isError'       => $this->isError,
+                'userFault'     => $this->userFault,
                 'errorMessages' => $this->errorMessages
             ];
         } elseif ($this->isForbidden) {
             $response = [
-                'isForbidden' => $this->isForbidden,
+                'isForbidden'       => $this->isForbidden,
                 'forbiddenMessages' => $this->forbiddenMessages
             ];
         } else {
@@ -128,15 +128,15 @@ class Controller extends BaseController
     /**
      * Return user fault response.
      *
-     * @param array $errorMessages
-     * @param bool|null $refreshToken
+     * @param  array  $errorMessages
+     * @param  bool|null  $refreshToken
      *
      * @return JsonResponse
      */
     protected function userErrorResponse(array $errorMessages, $refreshToken = null)
     {
-        $this->isError = true;
-        $this->userFault = true;
+        $this->isError       = true;
+        $this->userFault     = true;
         $this->errorMessages = $errorMessages;
 
         if ($refreshToken !== null) {
@@ -153,7 +153,7 @@ class Controller extends BaseController
      */
     protected function errorResponse()
     {
-        $this->isError = true;
+        $this->isError       = true;
         $this->errorMessages = ['application' => TranslationCode::ERROR_APPLICATION];
 
         return $this->buildResponse();
@@ -166,7 +166,7 @@ class Controller extends BaseController
      */
     protected function forbiddenResponse()
     {
-        $this->isForbidden = true;
+        $this->isForbidden       = true;
         $this->forbiddenMessages = ['forbidden' => TranslationCode::ERROR_FORBIDDEN];
 
         return $this->buildResponse();

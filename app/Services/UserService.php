@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use IonGhitun\JwtToken\Jwt;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 /**
@@ -29,22 +30,22 @@ class UserService
     /**
      * Validate request on login
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateLoginRequest(Request $request)
     {
         $rules = [
-            'email' => 'required|email|exists_encrypted:users,email',
+            'email'    => 'required|email|exists_encrypted:users,email',
             'password' => 'required'
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_EMAIL_INVALID,
+            'email.required'         => TranslationCode::ERROR_EMAIL_REQUIRED,
+            'email.email'            => TranslationCode::ERROR_EMAIL_INVALID,
             'email.exists_encrypted' => TranslationCode::ERROR_EMAIL_NOT_REGISTERED,
-            'password.required' => TranslationCode::ERROR_PASSWORD_REQUIRED
+            'password.required'      => TranslationCode::ERROR_PASSWORD_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -53,7 +54,7 @@ class UserService
     /**
      * Validate request on login with remember token
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
@@ -73,7 +74,7 @@ class UserService
     /**
      * Get user from email and password
      *
-     * @param array $credentials
+     * @param  array  $credentials
      *
      * @return User|null
      */
@@ -83,7 +84,7 @@ class UserService
 
         /** @var User|null $user */
         $user = $builder->whereEncrypted('email', $credentials['email'])
-            ->first();
+                        ->first();
 
         if (!$user) {
             return null;
@@ -101,31 +102,30 @@ class UserService
     /**
      * Get user builder for login
      *
-     * @return Builder
+     * @return Builder|BaseModel
      */
     public static function getUserBuilderForLogin()
     {
-        /** @var  Builder $userBuilder */
-        $userBuilder = User::with(['role' => function ($query) {
-            $query->select(['id', 'name'])
-                ->with(['permissions']);
-        }]);
-
-        return $userBuilder;
+        return User::with([
+            'role' => function ($query) {
+                $query->select(['id', 'name'])
+                      ->with(['permissions']);
+            }
+        ]);
     }
 
     /**
      * Generate returned data on login
      *
-     * @param User $user
-     * @param bool $remember
+     * @param  User  $user
+     * @param  bool  $remember
      *
      * @return array
      */
     public function generateLoginData(User $user, $remember = false)
     {
         $data = [
-            'user' => $user,
+            'user'  => $user,
             'token' => Jwt::generateToken([
                 'id' => $user->id
             ])
@@ -150,9 +150,9 @@ class UserService
     {
         $userToken = new UserToken();
 
-        $userToken->user_id = $userId;
-        $userToken->token = Str::random(64);
-        $userToken->type = UserToken::TYPE_REMEMBER_ME;
+        $userToken->user_id   = $userId;
+        $userToken->token     = Str::random(64);
+        $userToken->type      = UserToken::TYPE_REMEMBER_ME;
         $userToken->expire_on = Carbon::now()->addDays($days)->format('Y-m-d H:i:s');
 
         $userToken->save();
@@ -174,7 +174,7 @@ class UserService
         /** @var User|null $user */
         $user = $builder->whereHas('userTokens', function ($query) use ($token) {
             $query->where('token', $token)
-                ->where('expire_on', '>=', Carbon::now()->format('Y-m-d H:i:s'));
+                  ->where('expire_on', '>=', Carbon::now()->format('Y-m-d H:i:s'));
         })->first();
 
         return $user;
@@ -184,14 +184,13 @@ class UserService
      * Update remember token validity when used on login
      *
      * @param $token
-     * @param int $days
+     * @param  int  $days
      */
     public function updateRememberTokenValability($token, $days = 14)
     {
-        /** @var UserToken $userToken */
         $userToken = UserToken::where('token', $token)
-            ->where('type', UserToken::TYPE_REMEMBER_ME)
-            ->first();
+                              ->where('type', UserToken::TYPE_REMEMBER_ME)
+                              ->first();
 
         if ($userToken) {
             $userToken->expire_on = Carbon::now()->addDays($days)->format('Y-m-d H:i:s');
@@ -203,19 +202,19 @@ class UserService
     /**
      * Validate request on facebook login
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateFacebookLoginRequest(Request $request)
     {
         $rules = [
-            'facebookId' => 'required',
+            'facebookId'  => 'required',
             'accessToken' => 'required',
         ];
 
         $messages = [
-            'facebookId.required' => TranslationCode::ERROR_FACEBOOK_ID_REQUIRED,
+            'facebookId.required'  => TranslationCode::ERROR_FACEBOOK_ID_REQUIRED,
             'accessToken.required' => TranslationCode::ERROR_FACEBOOK_ACCESS_TOKEN_REQUIRED
         ];
 
@@ -225,19 +224,19 @@ class UserService
     /**
      * Validate request on google login
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateGoogleLoginRequest(Request $request)
     {
         $rules = [
-            'googleId' => 'required',
+            'googleId'    => 'required',
             'accessToken' => 'required',
         ];
 
         $messages = [
-            'googleId.required' => TranslationCode::ERROR_GOOGLE_ID_REQUIRED,
+            'googleId.required'    => TranslationCode::ERROR_GOOGLE_ID_REQUIRED,
             'accessToken.required' => TranslationCode::ERROR_GOOGLE_ACCESS_TOKEN_REQUIRED
         ];
 
@@ -247,9 +246,9 @@ class UserService
     /**
      * Login user with social
      *
-     * @param SocialiteUser $socialUser
-     * @param Language $language
-     * @param string $socialId
+     * @param  SocialiteUser  $socialUser
+     * @param  Language  $language
+     * @param  string  $socialId
      *
      * @return User
      */
@@ -257,18 +256,17 @@ class UserService
     {
         $builder = self::getUserBuilderForLogin();
 
-        /** @var User|null $user */
         $user = $builder->where(function ($query) use ($socialUser, $socialId) {
             $query->where($socialId, $socialUser->getId())
-                ->orWhereEncrypted('email', $socialUser->getEmail());
+                  ->orWhereEncrypted('email', $socialUser->getEmail());
         })->first();
 
         if (!$user) {
             $user = new User();
 
             $user->language_id = $language->id;
-            $user->name = $socialUser->getName();
-            $user->email = $socialUser->getEmail();
+            $user->name        = $socialUser->getName();
+            $user->email       = $socialUser->getEmail();
 
             if ($socialUser->getAvatar()) {
                 $baseService = new BaseService();
@@ -278,7 +276,8 @@ class UserService
 
                 $generatedPictureName = time() . '.jpg';
 
-                $pictureData = $baseService->processImage($path, $socialUser->getAvatar(), $generatedPictureName, true, true);
+                $pictureData = $baseService->processImage($path, $socialUser->getAvatar(), $generatedPictureName, true,
+                    true);
 
                 if ($pictureData) {
                     $user->picture = $pictureData;
@@ -286,7 +285,7 @@ class UserService
             }
         }
 
-        $user->status = User::STATUS_CONFIRMED;
+        $user->status    = User::STATUS_CONFIRMED;
         $user->$socialId = $socialUser->getId();
 
         $user->save();
@@ -297,30 +296,30 @@ class UserService
     /**
      * Validate request on register
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateRegisterRequest(Request $request)
     {
         $rules = [
-            'name' => 'required|name',
-            'email' => 'required|email|unique_encrypted:users,email',
-            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'name'           => 'required|name',
+            'email'          => 'required|email|unique_encrypted:users,email',
+            'password'       => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
             'retypePassword' => 'required|same:password'
         ];
 
         $messages = [
-            'name.required' => TranslationCode::ERROR_REGISTER_NAME_REQUIRED,
-            'name.name' => TranslationCode::ERROR_REGISTER_NAME_NAME,
-            'email.required' => TranslationCode::ERROR_REGISTER_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_REGISTER_EMAIL_INVALID,
-            'email.unique_encrypted' => TranslationCode::ERROR_REGISTER_EMAIL_REGISTERED,
-            'password.required' => TranslationCode::ERROR_REGISTER_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_REGISTER_PASSWORD_MIN8,
-            'password.regex' => TranslationCode::ERROR_REGISTER_PASSWORD_COMPLEXITY,
+            'name.required'           => TranslationCode::ERROR_REGISTER_NAME_REQUIRED,
+            'name.name'               => TranslationCode::ERROR_REGISTER_NAME_NAME,
+            'email.required'          => TranslationCode::ERROR_REGISTER_EMAIL_REQUIRED,
+            'email.email'             => TranslationCode::ERROR_REGISTER_EMAIL_INVALID,
+            'email.unique_encrypted'  => TranslationCode::ERROR_REGISTER_EMAIL_REGISTERED,
+            'password.required'       => TranslationCode::ERROR_REGISTER_PASSWORD_REQUIRED,
+            'password.min'            => TranslationCode::ERROR_REGISTER_PASSWORD_MIN8,
+            'password.regex'          => TranslationCode::ERROR_REGISTER_PASSWORD_COMPLEXITY,
             'retypePassword.required' => TranslationCode::ERROR_REGISTER_RETYPE_PASSWORD_REQUIRED,
-            'retypePassword.same' => TranslationCode::ERROR_REGISTER_RETYPE_PASSWORD_SAME
+            'retypePassword.same'     => TranslationCode::ERROR_REGISTER_RETYPE_PASSWORD_SAME
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -329,33 +328,33 @@ class UserService
     /**
      * Validate request on update user
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateUpdateUserRequest(Request $request)
     {
         $rules = [
-            'name' => 'required|name',
-            'email' => 'required|email',
-            'oldPassword' => 'required_with:newPassword',
-            'newPassword' => 'nullable|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'name'           => 'required|name',
+            'email'          => 'required|email',
+            'oldPassword'    => 'required_with:newPassword',
+            'newPassword'    => 'nullable|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
             'retypePassword' => 'required_with:newPassword|same:newPassword',
-            'language' => 'required|exists:languages,code'
+            'language'       => 'required|exists:languages,code'
         ];
 
         $messages = [
-            'name.required' => TranslationCode::ERROR_UPDATE_NAME_REQUIRED,
-            'name.name' => TranslationCode::ERROR_UPDATE_NAME_NAME,
-            'email.required' => TranslationCode::ERROR_UPDATE_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_UPDATE_EMAIL_INVALID,
-            'oldPassword.required_with' => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
-            'newPassword.min' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN8,
-            'newPassword.regex' => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_COMPLEXITY,
+            'name.required'                => TranslationCode::ERROR_UPDATE_NAME_REQUIRED,
+            'name.name'                    => TranslationCode::ERROR_UPDATE_NAME_NAME,
+            'email.required'               => TranslationCode::ERROR_UPDATE_EMAIL_REQUIRED,
+            'email.email'                  => TranslationCode::ERROR_UPDATE_EMAIL_INVALID,
+            'oldPassword.required_with'    => TranslationCode::ERROR_UPDATE_OLD_PASSWORD_REQUIRED,
+            'newPassword.min'              => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_MIN8,
+            'newPassword.regex'            => TranslationCode::ERROR_UPDATE_NEW_PASSWORD_COMPLEXITY,
             'retypePassword.required_with' => TranslationCode::ERROR_UPDATE_RETYPE_PASSWORD_REQUIRED,
-            'retypePassword.same' => TranslationCode::ERROR_UPDATE_RETYPE_PASSWORD_SAME,
-            'language.required' => TranslationCode::ERROR_UPDATE_LANGUAGE_REQUIRED,
-            'language.exists' => TranslationCode::ERROR_UPDATE_LANGUAGE_EXISTS,
+            'retypePassword.same'          => TranslationCode::ERROR_UPDATE_RETYPE_PASSWORD_SAME,
+            'language.required'            => TranslationCode::ERROR_UPDATE_LANGUAGE_REQUIRED,
+            'language.exists'              => TranslationCode::ERROR_UPDATE_LANGUAGE_EXISTS,
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -364,18 +363,18 @@ class UserService
     /**
      * Update logged user
      *
-     * @param User $user
-     * @param Request $request
-     * @param Language $language
+     * @param  User  $user
+     * @param  Request  $request
+     * @param  Language  $language
      */
     public function updateLoggedUser(User &$user, Request $request, Language $language)
     {
-        $email = $request->get('email');
+        $email        = $request->get('email');
         $confirmEmail = false;
 
         if ($user->email !== $email) {
-            $user->email = $email;
-            $user->status = User::STATUS_EMAIL_UNCONFIRMED;
+            $user->email           = $email;
+            $user->status          = User::STATUS_EMAIL_UNCONFIRMED;
             $user->activation_code = strtoupper(Str::random(6));
 
             $confirmEmail = true;
@@ -401,7 +400,7 @@ class UserService
     /**
      * Validate request on update user picture
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
@@ -413,7 +412,7 @@ class UserService
 
         $messages = [
             'picture.required' => TranslationCode::ERROR_UPDATE_PICTURE_REQUIRED,
-            'picture.image' => TranslationCode::ERROR_UPDATE_PICTURE_IMAGE
+            'picture.image'    => TranslationCode::ERROR_UPDATE_PICTURE_IMAGE
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -430,7 +429,7 @@ class UserService
         /** @var User $user */
         $user = Auth::user();
 
-        $pictureExtension = $picture->getClientOriginalExtension();
+        $pictureExtension     = $picture->getClientOriginalExtension();
         $generatedPictureName = str_replace(' ', '_', $user->name) . '_' . time() . '.' . $pictureExtension;
 
         $path = 'uploads/users/';
@@ -458,7 +457,7 @@ class UserService
     /**
      * Validate request on forgot password
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
@@ -469,8 +468,8 @@ class UserService
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
+            'email.required'         => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
+            'email.email'            => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
             'email.exists_encrypted' => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED
         ];
 
@@ -480,15 +479,14 @@ class UserService
     /**
      * Send code on email for forgot password
      *
-     * @param User $user
-     * @param Language $language
+     * @param  User  $user
+     * @param  Language  $language
      */
     public function sendForgotPasswordCode(User $user, Language $language)
     {
         $user->forgot_code = strtoupper(Str::random(6));
         $user->forgot_time = Carbon::now()->format('Y-m-d H:i:s');
 
-        /** @var EmailService $emailService */
         $emailService = new EmailService();
 
         $emailService->sendForgotPasswordCode($user, $language->code);
@@ -499,29 +497,29 @@ class UserService
     /**
      * Validate request on forgot change password
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
     public function validateChangePasswordRequest(Request $request)
     {
         $rules = [
-            'email' => 'required|email|exists_encrypted:users,email',
-            'code' => 'required',
-            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
+            'email'          => 'required|email|exists_encrypted:users,email',
+            'code'           => 'required',
+            'password'       => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\d\X])(?=.*[^a-zA-Z\d\s:]).*$/',
             'retypePassword' => 'required|same:password'
         ];
 
         $messages = [
-            'email.required' => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
-            'email.exists_encrypted' => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED,
-            'code.required' => TranslationCode::ERROR_FORGOT_CODE_REQUIRED,
-            'password.required' => TranslationCode::ERROR_FORGOT_PASSWORD_REQUIRED,
-            'password.min' => TranslationCode::ERROR_FORGOT_PASSWORD_MIN8,
-            'password.regex' => TranslationCode::ERROR_FORGOT_PASSWORD_COMPLEXITY,
+            'email.required'          => TranslationCode::ERROR_FORGOT_EMAIL_REQUIRED,
+            'email.email'             => TranslationCode::ERROR_FORGOT_EMAIL_INVALID,
+            'email.exists_encrypted'  => TranslationCode::ERROR_FORGOT_EMAIL_NOT_REGISTERED,
+            'code.required'           => TranslationCode::ERROR_FORGOT_CODE_REQUIRED,
+            'password.required'       => TranslationCode::ERROR_FORGOT_PASSWORD_REQUIRED,
+            'password.min'            => TranslationCode::ERROR_FORGOT_PASSWORD_MIN8,
+            'password.regex'          => TranslationCode::ERROR_FORGOT_PASSWORD_COMPLEXITY,
             'retypePassword.required' => TranslationCode::ERROR_FORGOT_RETYPE_PASSWORD_REQUIRED,
-            'retypePassword.same' => TranslationCode::ERROR_FORGOT_RETYPE_PASSWORD_SAME
+            'retypePassword.same'     => TranslationCode::ERROR_FORGOT_RETYPE_PASSWORD_SAME
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -530,14 +528,14 @@ class UserService
     /**
      * Update user password after reset
      *
-     * @param User $user
+     * @param  User  $user
      * @param $password
      */
     public function updatePassword(User $user, $password)
     {
         $user->forgot_code = null;
         $user->forgot_time = null;
-        $user->password = Hash::make($password);
+        $user->password    = Hash::make($password);
 
         $user->save();
     }
@@ -545,22 +543,21 @@ class UserService
     /**
      * Register user
      *
-     * @param Request $request
-     * @param Language $language
+     * @param  Request  $request
+     * @param  Language  $language
      */
     public function registerUser(Request $request, Language $language)
     {
         $user = new User();
 
-        $user->name = $request->get('name');
-        $user->email = $request->get('email');
-        $user->password = $request->get('password');
-        $user->status = User::STATUS_UNCONFIRMED;
-        $user->language_id = $language->id;
-        $user->role_id = Role::ID_USER;
+        $user->name            = $request->get('name');
+        $user->email           = $request->get('email');
+        $user->password        = $request->get('password');
+        $user->status          = User::STATUS_UNCONFIRMED;
+        $user->language_id     = $language->id;
+        $user->role_id         = Role::ID_USER;
         $user->activation_code = strtoupper(Str::random(6));
 
-        /** @var EmailService $emailService */
         $emailService = new EmailService();
 
         $emailService->sendActivationCode($user, $language->code);
@@ -571,7 +568,7 @@ class UserService
     /**
      * Validate activate account
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
@@ -579,13 +576,13 @@ class UserService
     {
         $rules = [
             'email' => 'required|email',
-            'code' => 'required'
+            'code'  => 'required'
         ];
 
         $messages = [
             'email.required' => TranslationCode::ERROR_ACTIVATE_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID,
-            'code.required' => TranslationCode::ERROR_ACTIVATE_CODE_REQUIRED
+            'email.email'    => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID,
+            'code.required'  => TranslationCode::ERROR_ACTIVATE_CODE_REQUIRED
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -603,14 +600,14 @@ class UserService
     {
         /** @var User|null $user */
         $user = User::whereEncrypted('email', $email)
-            ->where('activation_code', $code)
-            ->first();
+                    ->where('activation_code', $code)
+                    ->first();
 
         if (!$user) {
             return false;
         }
 
-        $user->status = User::STATUS_CONFIRMED;
+        $user->status          = User::STATUS_CONFIRMED;
         $user->activation_code = null;
 
         $user->save();
@@ -621,7 +618,7 @@ class UserService
     /**
      * Validate request on resend
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return ReturnedValidator
      */
@@ -633,7 +630,7 @@ class UserService
 
         $messages = [
             'email.required' => TranslationCode::ERROR_ACTIVATE_EMAIL_REQUIRED,
-            'email.email' => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID
+            'email.email'    => TranslationCode::ERROR_ACTIVATE_EMAIL_INVALID
         ];
 
         return Validator::make($request->all(), $rules, $messages);
@@ -642,7 +639,7 @@ class UserService
     /**
      * Resend registration mail
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return array|bool
      */
@@ -663,7 +660,6 @@ class UserService
             return ['code' => TranslationCode::ERROR_ACTIVATE_CODE_SEND_COOLDOWN];
         }
 
-        /** @var EmailService $emailService */
         $emailService = new EmailService();
 
         $emailService->sendActivationCode($user, $user->language->code);

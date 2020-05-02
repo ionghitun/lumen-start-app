@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class RolePermission
@@ -22,6 +24,25 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  *
  * @property Role $role
  * @property Permission $permission
+ *
+ * @method static Builder|RolePermission newModelQuery()
+ * @method static Builder|RolePermission newQuery()
+ * @method static Builder|RolePermission query()
+ * @method static Builder|RolePermission whereCreate($value)
+ * @method static Builder|RolePermission whereCreatedAt($value)
+ * @method static Builder|RolePermission whereDelete($value)
+ * @method static Builder|RolePermission whereId($value)
+ * @method static Builder|RolePermission whereManage($value)
+ * @method static Builder|RolePermission wherePermissionId($value)
+ * @method static Builder|RolePermission whereRead($value)
+ * @method static Builder|RolePermission whereRoleId($value)
+ * @method static Builder|RolePermission whereUpdate($value)
+ * @method static Builder|RolePermission whereUpdatedAt($value)
+ * @method static Builder|BaseModel orWhereEncrypted($column, $value)
+ * @method static Builder|BaseModel orWhereNotEncrypted($column, $value)
+ * @method static Builder|BaseModel orderByEncrypted($column, $direction)
+ * @method static Builder|BaseModel whereEncrypted($column, $value)
+ * @method static Builder|BaseModel whereNotEncrypted($column, $value)
  *
  * @package App\Models
  */
@@ -79,7 +100,7 @@ class RolePermission extends Pivot
 
     /** @var array */
     protected $casts = [
-        'read' => 'int',
+        'read'   => 'int',
         'create' => 'int',
         'update' => 'int',
         'delete' => 'int',

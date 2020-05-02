@@ -29,12 +29,12 @@ class NotificationEvent extends Event implements ShouldBroadcast
      *
      * Initialize notification data and user that should receive the notification.
      *
-     * @param array $data
+     * @param  array  $data
      * @param $userId
      */
     public function __construct(array $data, $userId)
     {
-        $this->data = $data;
+        $this->data   = $data;
         $this->userId = $userId;
     }
 
@@ -55,6 +55,8 @@ class NotificationEvent extends Event implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return ['notification' => $this->data];
+        return [
+            'notification' => $this->data
+        ];
     }
 }

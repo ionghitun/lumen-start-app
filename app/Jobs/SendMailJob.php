@@ -27,7 +27,7 @@ class SendMailJob extends Job implements ShouldQueue
     /**
      * SendMailJob constructor.
      *
-     * @param SendMail $sendMail
+     * @param  SendMail  $sendMail
      */
     public function __construct(SendMail $sendMail)
     {

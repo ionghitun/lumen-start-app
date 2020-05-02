@@ -18,25 +18,32 @@ class TaskService
     /**
      * Get tasks builder.
      *
-     * @param int $canManage
+     * @param  int  $canManage
+     * @param  bool  $onlyOwn
      *
-     * @return Builder
+     * @return UserTask|Builder
      */
-    public function getUserTasksBuilder($canManage = 0)
+    public function getUserTasksBuilder($canManage = RolePermission::MANAGE_OWN, $onlyOwn = false)
     {
         /** @var User $user */
         $user = Auth::user();
 
-        $userTasks = UserTask::with(['user' => function ($query) {
-            $query->select(['id', 'name']);
-        }, 'assignedUser' => function ($query) {
-            $query->select(['id', 'name']);
-        }]);
+        $userTasks = UserTask::with([
+            'user'         => function ($query) {
+                $query->select(['id', 'name']);
+            },
+            'assignedUser' => function ($query) {
+                $query->select(['id', 'name']);
+            }
+        ]);
 
         if ($canManage === RolePermission::MANAGE_OWN) {
-            $userTasks = $userTasks->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('assigned_user_id', $user->id);
+            $userTasks = $userTasks->where(function ($query) use ($user, $onlyOwn) {
+                $query->where('user_id', $user->id);
+
+                if (!$onlyOwn) {
+                    $query->orWhere('assigned_user_id', $user->id);
+                }
             });
         }
 

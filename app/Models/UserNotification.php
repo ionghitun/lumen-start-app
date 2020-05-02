@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class UserNotification
@@ -20,6 +23,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $deleted_at
  *
  * @property User $user
+ *
+ * @method static Builder|UserNotification newModelQuery()
+ * @method static Builder|UserNotification newQuery()
+ * @method static Builder|UserNotification query()
+ * @method static Builder|UserNotification whereCreatedAt($value)
+ * @method static Builder|UserNotification whereDeletedAt($value)
+ * @method static Builder|UserNotification whereId($value)
+ * @method static Builder|UserNotification whereMessage($value)
+ * @method static Builder|UserNotification whereRefId($value)
+ * @method static Builder|UserNotification whereRefName($value)
+ * @method static Builder|UserNotification whereStatus($value)
+ * @method static Builder|UserNotification whereUpdatedAt($value)
+ * @method static Builder|UserNotification whereUserId($value)
+ * @method static QueryBuilder|UserNotification onlyTrashed()
+ * @method static QueryBuilder|UserNotification withTrashed()
+ * @method static QueryBuilder|UserNotification withoutTrashed()
+ * @method static Builder|BaseModel orWhereEncrypted($column, $value)
+ * @method static Builder|BaseModel orWhereNotEncrypted($column, $value)
+ * @method static Builder|BaseModel orderByEncrypted($column, $direction)
+ * @method static Builder|BaseModel whereEncrypted($column, $value)
+ * @method static Builder|BaseModel whereNotEncrypted($column, $value)
  *
  * @package App\Models
  */

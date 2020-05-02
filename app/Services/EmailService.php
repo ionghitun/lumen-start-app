@@ -18,7 +18,7 @@ class EmailService
     /**
      * Send code on email for forgot password
      *
-     * @param User $user
+     * @param  User  $user
      * @param $languageCode
      */
     public function sendForgotPasswordCode(User $user, $languageCode)
@@ -30,7 +30,7 @@ class EmailService
             Lang::get('forgot.subject'),
             'emails.forgot',
             [
-                'name' => $user->name,
+                'name'        => $user->name,
                 'forgot_code' => $user->forgot_code
             ]
         );
@@ -53,7 +53,7 @@ class EmailService
             Lang::get('activate.subject'),
             'emails.activation',
             [
-                'name' => $user->name,
+                'name'            => $user->name,
                 'activation_code' => $user->activation_code
             ]
         );
@@ -76,7 +76,7 @@ class EmailService
             Lang::get('emailChange.subject'),
             'emails.emailChange',
             [
-                'name' => $user->name,
+                'name'            => $user->name,
                 'activation_code' => $user->activation_code
             ]
         );

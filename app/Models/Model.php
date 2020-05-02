@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use IonGhitun\MysqlEncryption\Models\BaseModel;
 
 /**
  * Class Model
  *
  * Each model should extend this class.
+ *
+ * @mixin Builder
+ * @mixin QueryBuilder
  *
  * @package App\Models
  */

@@ -7,15 +7,13 @@ use App\Models\User;
 use App\Models\UserToken;
 use App\Services\LogService;
 use App\Services\UserService;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\User as SocialiteUser;
+use Throwable;
 
 /**
  * Class LoginController
@@ -40,7 +38,7 @@ class LoginController extends Controller
     /**
      * Login user with email and password or remember token
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -53,7 +51,6 @@ class LoginController extends Controller
                 return $this->userErrorResponse($validator->messages()->toArray());
             }
 
-            /** @var User|null $user */
             $user = $this->userService->loginUser($request->only('email', 'password'));
 
             if (!$user) {
@@ -67,8 +64,8 @@ class LoginController extends Controller
             $loginData = $this->userService->generateLoginData($user, $request->has('remember'));
 
             return $this->successResponse($loginData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -77,7 +74,7 @@ class LoginController extends Controller
     /**
      * Login with remember token
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -92,7 +89,6 @@ class LoginController extends Controller
 
             $rememberToken = $request->get('rememberToken');
 
-            /** @var User|null $user */
             $user = $this->userService->loginUserWithRememberToken($rememberToken);
 
             if (!$user) {
@@ -112,8 +108,8 @@ class LoginController extends Controller
             DB::commit();
 
             return $this->successResponse($loginData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -122,7 +118,7 @@ class LoginController extends Controller
     /**
      * Login with facebook
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -138,9 +134,8 @@ class LoginController extends Controller
             $token = $request->get('accessToken');
 
             try {
-                /** @var SocialiteUser $facebookUser */
                 $facebookUser = Socialite::driver('facebook')->userFromToken($token);
-            } catch (Exception $e) {
+            } catch (Throwable $t) {
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_FACEBOOK_ACCESS_TOKEN_INVALID]);
             }
 
@@ -154,16 +149,16 @@ class LoginController extends Controller
 
             DB::beginTransaction();
 
-            /** @var User|null $user */
-            $user = $this->userService->loginUserWithSocial($facebookUser, $this->baseService->getLanguage($request), 'facebook_id');
+            $user = $this->userService->loginUserWithSocial($facebookUser, $this->baseService->getLanguage($request),
+                'facebook_id');
 
             $loginData = $this->userService->generateLoginData($user);
 
             DB::commit();
 
             return $this->successResponse($loginData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -172,7 +167,7 @@ class LoginController extends Controller
     /**
      * Login with google
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -188,9 +183,8 @@ class LoginController extends Controller
             $token = $request->get('accessToken');
 
             try {
-                /** @var SocialiteUser $googleUser */
                 $googleUser = Socialite::driver('google')->userFromToken($token);
-            } catch (Exception $e) {
+            } catch (Throwable $t) {
                 return $this->userErrorResponse(['token' => TranslationCode::ERROR_GOOGLE_ACCESS_TOKEN_INVALID]);
             }
 
@@ -204,16 +198,16 @@ class LoginController extends Controller
 
             DB::beginTransaction();
 
-            /** @var User|null $user */
-            $user = $this->userService->loginUserWithSocial($googleUser, $this->baseService->getLanguage($request), 'google_id');
+            $user = $this->userService->loginUserWithSocial($googleUser, $this->baseService->getLanguage($request),
+                'google_id');
 
             $loginData = $this->userService->generateLoginData($user);
 
             DB::commit();
 
             return $this->successResponse($loginData);
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
@@ -222,7 +216,7 @@ class LoginController extends Controller
     /**
      * Logout user
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      */
@@ -235,9 +229,8 @@ class LoginController extends Controller
             if ($request->has('rememberToken') || $request->has('everywhere')) {
                 DB::beginTransaction();
 
-                /** @var Builder $userTokens */
                 $userTokens = UserToken::where('user_id', $user->id)
-                    ->where('type', UserToken::TYPE_REMEMBER_ME);
+                                       ->where('type', UserToken::TYPE_REMEMBER_ME);
 
                 if ($request->has('rememberToken')) {
                     $userTokens = $userTokens->where('token', $request->get('rememberToken'));
@@ -249,8 +242,8 @@ class LoginController extends Controller
             }
 
             return $this->successResponse();
-        } catch (Exception $e) {
-            Log::error(LogService::getExceptionTraceAsString($e, $request));
+        } catch (Throwable $t) {
+            Log::error(LogService::getThrowableTraceAsString($t, $request));
 
             return $this->errorResponse();
         }
